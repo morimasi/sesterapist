@@ -1,0 +1,8 @@
+{
+  "name": "TheraSpeech - AI Powered Speech Therapy Platform",
+  "description": "A comprehensive platform for online speech therapy, AI-driven material generation, and personalized progress tracking.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
