@@ -8,6 +8,12 @@ interface MaterialLibraryProps {
   onAdd: (activity: Activity) => void;
 }
 
+const QUICK_PROMPTS = [
+  { label: "Çiftlik Hayvanları", prompt: "4 yaş grubu için çiftlik hayvanları temalı, hayvan sesleri içeren kelime dağarcığı geliştirme kartları seti oluştur." },
+  { label: "Uzay Yolculuğu", prompt: "6 yaş grubu için /s/ ve /ş/ seslerini ayırt etmeye yönelik uzay temalı bir interaktif macera oyunu tasarla." },
+  { label: "Günlük Rutinler", prompt: "Sabah hazırlığı ve okul rutini üzerine sıralama becerisini geliştiren bir egzersiz kurgula." }
+];
+
 const MaterialLibrary: React.FC<MaterialLibraryProps> = ({ onAdd }) => {
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
@@ -21,15 +27,16 @@ const MaterialLibrary: React.FC<MaterialLibraryProps> = ({ onAdd }) => {
     return matchesSearch && matchesFilter;
   });
 
-  const handleAiGenerate = async () => {
-    if (!aiPrompt) return;
+  const handleAiGenerate = async (customPrompt?: string) => {
+    const finalPrompt = customPrompt || aiPrompt;
+    if (!finalPrompt) return;
     setIsAiGenerating(true);
     
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview', // Güncellendi: Daha hızlı materyal üretimi
-        contents: `Dil konuşma terapisi için profesyonel bir materyal oluştur. Kullanıcı isteği: "${aiPrompt}"`,
+        model: 'gemini-3-flash-preview',
+        contents: `Dil konuşma terapisi için profesyonel bir materyal oluştur. Kullanıcı isteği: "${finalPrompt}"`,
         config: {
           responseMimeType: "application/json",
           responseSchema: {
@@ -67,7 +74,7 @@ const MaterialLibrary: React.FC<MaterialLibraryProps> = ({ onAdd }) => {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-2">
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight italic">Materyal Kütüphanesi</h2>
-            <p className="text-base md:text-lg text-slate-500 font-medium">Flash 3.0 destekli akıllı materyal üretim merkezi.</p>
+            <p className="text-base md:text-lg text-slate-500 font-medium tracking-tight">Flash 3.0 destekli akıllı materyal üretim merkezi.</p>
           </div>
           <div className="flex bg-white p-1 rounded-2xl border border-border shadow-sm overflow-x-auto whitespace-nowrap scrollbar-hide">
              {['all', 'Game', 'Exercise', 'Cards'].map(t => (
@@ -82,70 +89,93 @@ const MaterialLibrary: React.FC<MaterialLibraryProps> = ({ onAdd }) => {
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-4 md:p-6 rounded-[32px] border border-primary/20 flex flex-col md:flex-row items-center gap-4 relative overflow-hidden group">
-           <div className="hidden md:block absolute top-0 right-0 p-4 opacity-10 group-hover:rotate-12 transition-transform">
-              <span className="material-symbols-outlined text-[120px]">bolt</span>
+        {/* AI Generator Section */}
+        <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-8 md:p-10 rounded-[48px] border border-white/5 shadow-2xl relative overflow-hidden group">
+           <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none group-hover:rotate-12 transition-transform duration-1000">
+              <span className="material-symbols-outlined text-[240px]">bolt</span>
            </div>
-           <div className="size-14 bg-white rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0 relative z-10">
-              <span className="material-symbols-outlined text-primary text-3xl italic">magic_button</span>
-           </div>
-           <div className="flex-1 relative z-10 w-full">
-              <div className="flex items-center gap-2 mb-1">
-                <h4 className="font-bold text-slate-800 text-sm md:text-base italic">AI MATERYAL OLUŞTURUCU (v3 FLASH)</h4>
-                <span className="px-2 py-0.5 bg-emerald-500 text-white text-[8px] font-black uppercase rounded animate-pulse">Ultra Hızlı</span>
+           
+           <div className="relative z-10 space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="size-12 bg-primary/20 text-primary rounded-2xl flex items-center justify-center border border-primary/20 shadow-lg">
+                  <span className="material-symbols-outlined text-3xl italic animate-pulse">magic_button</span>
+                </div>
+                <div>
+                   <h4 className="font-black text-white text-xl md:text-2xl italic tracking-tight uppercase">AI MATERYAL OLUŞTURUCU <span className="text-primary">v3 FLASH</span></h4>
+                   <p className="text-slate-400 text-sm font-medium">Saniyeler içinde klinik standartlarda materyal tasarlayın.</p>
+                </div>
               </div>
-              <div className="flex flex-col sm:flex-row gap-2">
+
+              <div className="flex flex-col md:flex-row gap-3">
                  <input 
-                   className="flex-1 bg-white border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none shadow-sm font-medium"
-                   placeholder="Örn: 4 yaş için hayali bir uzay yolculuğu temalı /s/ sesi egzersizi..."
+                   className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-slate-500 focus:ring-4 focus:ring-primary/20 outline-none transition-all font-medium text-lg"
+                   placeholder="Örn: 4 yaş için çiftlik hayvanları temalı kartlar..."
                    value={aiPrompt}
                    onChange={(e) => setAiPrompt(e.target.value)}
+                   onKeyDown={(e) => e.key === 'Enter' && handleAiGenerate()}
                  />
                  <button 
                    disabled={isAiGenerating}
-                   onClick={handleAiGenerate}
-                   className={`bg-slate-900 text-white px-6 py-3 rounded-xl font-black shadow-lg hover:bg-black transition-all flex items-center justify-center gap-2 ${isAiGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                   onClick={() => handleAiGenerate()}
+                   className={`bg-primary text-white px-10 py-4 rounded-2xl font-black shadow-2xl shadow-primary/20 hover:bg-primary-dark transition-all flex items-center justify-center gap-3 active:scale-95 ${isAiGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
                  >
-                   {isAiGenerating ? <span className="animate-spin material-symbols-outlined">sync</span> : <span className="material-symbols-outlined">bolt</span>}
-                   {isAiGenerating ? 'İşleniyor...' : 'Saniyeler İçinde Oluştur'}
+                   {isAiGenerating ? <span className="animate-spin material-symbols-outlined">sync</span> : <span className="material-symbols-outlined">auto_fix</span>}
+                   {isAiGenerating ? 'İşleniyor...' : 'Hemen Oluştur'}
                  </button>
+              </div>
+
+              {/* Quick Prompts Area */}
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest mr-2">Hızlı Örnekler:</span>
+                 {QUICK_PROMPTS.map((qp, i) => (
+                   <button 
+                     key={i}
+                     onClick={() => { setAiPrompt(qp.prompt); handleAiGenerate(qp.prompt); }}
+                     disabled={isAiGenerating}
+                     className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl text-xs font-bold text-slate-300 transition-all active:scale-95"
+                   >
+                     {qp.label}
+                   </button>
+                 ))}
               </div>
            </div>
         </div>
 
+        {/* Existing Library Section */}
         <div className="space-y-6">
-           <div className="relative">
-              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+           <div className="relative group">
+              <span className="material-symbols-outlined absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
               <input 
-                className="w-full bg-white border border-border rounded-2xl pl-12 pr-6 py-4 text-base md:text-lg focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-sm font-medium"
-                placeholder="Materyal ismine göre ara..."
+                className="w-full bg-white border-2 border-slate-100 rounded-[32px] pl-16 pr-8 py-6 text-lg focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all shadow-xl shadow-slate-200/50 font-medium"
+                placeholder="Kütüphanede ara..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
            </div>
 
-           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-12">
+           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-20">
               {filtered.map(item => (
-                <div key={item.id} className="bg-white rounded-[32px] border border-border overflow-hidden group hover:shadow-2xl hover:border-primary/20 transition-all flex flex-col">
+                <div key={item.id} className="bg-white rounded-[40px] border border-border overflow-hidden group hover:shadow-2xl hover:border-primary/30 transition-all flex flex-col relative">
                    <div className="relative aspect-[4/3] overflow-hidden">
-                      <img src={item.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={item.title} />
-                      <div className="absolute top-4 left-4">
-                         <span className="bg-white/90 backdrop-blur-md text-[10px] font-black uppercase px-2 py-1 rounded-lg text-primary shadow-sm border border-white/20">{item.type}</span>
+                      <img src={item.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out" alt={item.title} />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <div className="absolute top-5 left-5">
+                         <span className="bg-white/90 backdrop-blur-md text-[10px] font-black uppercase px-3 py-1.5 rounded-xl text-primary shadow-xl border border-white/20">{item.type}</span>
                       </div>
                    </div>
-                   <div className="p-6 flex-1 flex flex-col">
-                      <h3 className="font-extrabold text-slate-900 group-hover:text-primary transition-colors mb-2 text-lg italic tracking-tight">{item.title}</h3>
-                      <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed mb-6 font-medium">{item.description}</p>
+                   <div className="p-8 flex-1 flex flex-col">
+                      <h3 className="font-extrabold text-slate-900 group-hover:text-primary transition-colors mb-3 text-xl italic tracking-tight leading-tight">{item.title}</h3>
+                      <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed mb-8 font-medium">{item.description}</p>
                       <div className="mt-auto flex items-center justify-between">
-                         <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400">
-                            <span className="material-symbols-outlined text-[16px]">timer</span>
-                            {item.duration} dk
+                         <div className="flex items-center gap-2 text-xs font-bold text-slate-400 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+                            <span className="material-symbols-outlined text-[18px]">schedule</span>
+                            {item.duration || 10} dk
                          </div>
                          <button 
                            onClick={() => onAdd(item)}
-                           className="bg-slate-50 hover:bg-primary hover:text-white text-slate-600 size-10 rounded-xl flex items-center justify-center transition-all border border-border active:scale-90"
+                           className="bg-slate-900 hover:bg-primary text-white size-12 rounded-2xl flex items-center justify-center transition-all shadow-lg active:scale-90 group-hover:rotate-12"
                          >
-                            <span className="material-symbols-outlined">add</span>
+                            <span className="material-symbols-outlined font-bold">add</span>
                          </button>
                       </div>
                    </div>
