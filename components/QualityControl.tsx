@@ -23,28 +23,28 @@ const QualityControl: React.FC = () => {
       <div className="max-w-6xl mx-auto space-y-10">
         <div className="flex items-center justify-between border-b border-white/10 pb-6">
            <div>
-              <h2 className="text-2xl font-black text-white tracking-tighter uppercase italic">Sistem_Tanilama_v6.0</h2>
-              <p className="text-xs text-slate-500 mt-1">Gerçek zamanlı altyapı izleme ve Kalite Kontrol</p>
+              <h2 className="text-2xl font-black text-white tracking-tighter uppercase italic leading-none">Sistem Tanılama v6.0</h2>
+              <p className="text-xs text-slate-500 mt-1 uppercase tracking-widest">Gerçek Zamanlı Altyapı İzleme</p>
            </div>
            <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 bg-emerald-500/10 text-emerald-500 px-4 py-1 rounded-full text-[10px] font-black border border-emerald-500/20">
                  <span className="size-2 bg-emerald-500 rounded-full animate-pulse"></span>
                  SİSTEM STABİL
               </div>
-              <button className="bg-white/5 hover:bg-white/10 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all border border-white/5">Stres Testi Çalıştır</button>
+              <button className="bg-white/5 hover:bg-white/10 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all border border-white/5 uppercase tracking-widest">Stres Testi</button>
            </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-           <StatusCard label="API_GECIKMESI" value={`${health.latency}ms`} sub="Optimal" color="text-primary" />
-           <StatusCard label="SUNUCU_YUKU" value="14.2%" sub="Düşük" color="text-emerald-500" />
-           <StatusCard label="HATA_ORANI" value="0.04%" sub="Sağlıklı" color="text-emerald-500" />
-           <StatusCard label="AKTIF_OTURUMLAR" value={health.activeUsers.toString()} sub="Son saatte +12" color="text-amber-500" />
+           <StatusCard label="API Gecikmesi" value={`${health.latency}ms`} sub="Optimal" color="text-primary" />
+           <StatusCard label="Sunucu Yükü" value="14.2%" sub="Düşük" color="text-emerald-500" />
+           <StatusCard label="Hata Oranı" value="0.04%" sub="Sağlıklı" color="text-emerald-500" />
+           <StatusCard label="Aktif Oturumlar" value={health.activeUsers.toString()} sub="Son saatte +12" color="text-amber-500" />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
            <section className="bg-white/5 rounded-3xl border border-white/10 p-8">
-              <h3 className="text-white font-bold mb-6 flex items-center gap-2 text-sm uppercase">
+              <h3 className="text-white font-bold mb-6 flex items-center gap-2 text-sm uppercase tracking-widest">
                  <span className="material-symbols-outlined text-sm text-primary">checklist</span>
                  Birim Test Kapsamı
               </h3>
@@ -64,26 +64,26 @@ const QualityControl: React.FC = () => {
            </section>
 
            <section className="bg-white/5 rounded-3xl border border-white/10 p-8">
-              <h3 className="text-white font-bold mb-6 flex items-center gap-2 text-sm uppercase">
+              <h3 className="text-white font-bold mb-6 flex items-center gap-2 text-sm uppercase tracking-widest">
                  <span className="material-symbols-outlined text-sm text-rose-500">bug_report</span>
                  Kritik Günlükler
               </h3>
               <div className="space-y-3">
                  <LogItem type="UYARI" msg="Gemini API kota sınırına yaklaşıyor (%85)" time="14:24:01" />
-                 <LogItem type="BİLGİ" msg="'session_data_v2' için zamanlanmış yedekleme başlatıldı" time="14:15:22" />
-                 <LogItem type="HATA" msg="client_id: 8824 üzerinde WebSocket bağlantısı kesildi (handshake_failed)" time="14:02:11" />
-                 <LogItem type="BİLGİ" msg="Kullanıcı kimlik doğrulaması başarılı (UID: 19283)" time="13:58:45" />
-                 <LogItem type="UYARI" msg="Yüksek kontrastlı erişilebilirlik modu global ayarlar tarafından etkinleştirildi" time="13:45:00" />
+                 <LogItem type="BİLGİ" msg="Zamanlanmış yedekleme başlatıldı" time="14:15:22" />
+                 <LogItem type="HATA" msg="WebSocket bağlantısı kesildi" time="14:02:11" />
+                 <LogItem type="BİLGİ" msg="Kullanıcı kimlik doğrulaması başarılı" time="13:58:45" />
+                 <LogItem type="UYARI" msg="Erişilebilirlik modu etkinleştirildi" time="13:45:00" />
               </div>
            </section>
         </div>
 
         <div className="bg-indigo-600/10 border border-indigo-600/20 rounded-3xl p-8 flex items-center justify-between">
            <div className="space-y-1">
-              <div className="text-indigo-400 font-black text-sm uppercase">Otomatik Optimizasyon</div>
+              <div className="text-indigo-400 font-black text-sm uppercase tracking-widest">Otomatik Optimizasyon</div>
               <p className="text-xs text-slate-400">Sistem şu anda trafik tahminlerine göre örnekleri ölçeklendiriyor.</p>
            </div>
-           <button className="px-6 py-3 bg-indigo-600 text-white font-black rounded-xl text-xs shadow-xl shadow-indigo-600/20">Önbelleği Optimize Et</button>
+           <button className="px-6 py-3 bg-indigo-600 text-white font-black rounded-xl text-xs shadow-xl shadow-indigo-600/20 uppercase tracking-widest">Önbelleği Optimize Et</button>
         </div>
       </div>
     </div>
@@ -92,8 +92,8 @@ const QualityControl: React.FC = () => {
 
 const StatusCard: React.FC<{ label: string, value: string, sub: string, color: string }> = ({ label, value, sub, color }) => (
   <div className="bg-white/5 p-6 rounded-2xl border border-white/10 hover:border-white/20 transition-all">
-     <div className="text-[10px] font-black text-slate-500 uppercase mb-2">{label}</div>
-     <div className={`text-2xl font-black ${color} tracking-tighter mb-1`}>{value}</div>
+     <div className="text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">{label}</div>
+     <div className={`text-2xl font-black ${color} tracking-tighter mb-1 leading-none uppercase`}>{value}</div>
      <div className="text-[10px] font-bold text-slate-600">{sub}</div>
   </div>
 );

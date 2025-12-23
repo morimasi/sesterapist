@@ -6,25 +6,48 @@ class AIService {
     return new GoogleGenAI({ apiKey: process.env.API_KEY });
   }
 
-  async summarizeDiscussion(messages: any[], config: any = {}) {
+  async generateClinicalProgressReport(data: {
+    metrics: any[],
+    phonemeScores: any,
+    clientNotes: string
+  }, config: any = {}) {
     const ai = this.getClient();
-    const discussionText = messages.map(m => `${m.senderName}: ${m.content}`).join('\n');
     
-    const response = await ai.models.generateContent({
-      model: config.model || 'gemini-3-flash-preview',
-      contents: `Aşağıdaki klinik tartışmayı analiz et ve şu başlıklarla özetle:
-      1. TARTIŞILAN TEMEL KONU
-      2. SUNULAN KLİNİK GÖRÜŞLER
-      3. VARILAN SONUÇ/ÖNERİLER
-      4. İLGİLİ AKADEMİK REFERANS ÖNERİLERİ
+    const prompt = `
+      UZMAN KLİNİK ANALİZ TALİMATI:
+      Aşağıdaki verileri bir Dil ve Konuşma Terapisti perspektifiyle analiz et:
+      - Zaman Bazlı Metrikler: ${JSON.stringify(data.metrics)}
+      - Fonem Başarı Analizi: ${JSON.stringify(data.phonemeScores)}
+      - Terapist Gözlemleri: ${data.clientNotes}
+
+      GÖREV:
+      1. Klinik Trend Analizi (Gelişim hızı, plato noktaları).
+      2. Spesifik Fonetik Zorluklar (Hangi ses dizilimlerinde takılma var?).
+      3. Gelecek Projeksiyonu (Mevcut hızla hedefe kaç seansta ulaşılır?).
+      4. Stratejik Tavsiyeler (Materyal değişikliği veya yöntem önerisi).
       
-      Tartışma Notları:
-      ${discussionText}`,
+      Yanıtı profesyonel, tıbbi bir formatta oluştur.
+    `;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-3-pro-preview',
+      contents: prompt,
       config: {
-        thinkingConfig: { thinkingBudget: 4000 }
+        thinkingConfig: { thinkingBudget: config.thinkingBudget || 16000 }
       }
     });
 
+    return response.text;
+  }
+
+  async summarizeDiscussion(messages: any[], config: any = {}) {
+    const ai = this.getClient();
+    const discussionText = messages.map(m => `${m.senderName}: ${m.content}`).join('\n');
+    const response = await ai.models.generateContent({
+      model: config.model || 'gemini-3-flash-preview',
+      contents: `Aşağıdaki klinik tartışmayı analiz et ve özetle:\n${discussionText}`,
+      config: { thinkingConfig: { thinkingBudget: 4000 } }
+    });
     return response.text;
   }
 
@@ -44,13 +67,15 @@ class AIService {
             duration: { type: Type.NUMBER },
             type: { type: Type.STRING },
             category: { type: Type.STRING },
+            clinicalHierarchy: { type: Type.ARRAY, items: { type: Type.STRING } },
             imagePrompt: { type: Type.STRING }
           },
           required: ["title", "description", "duration", "type", "category", "imagePrompt"]
         }
       }
     });
-    return JSON.parse(metaResponse.text || '{}');
+    const metadata = JSON.parse(metaResponse.text || '{}');
+    return metadata;
   }
 
   async analyzeClinicalCase(notes: string, config: any = {}) {

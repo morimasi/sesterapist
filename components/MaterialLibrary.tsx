@@ -12,9 +12,8 @@ const MaterialLibrary: React.FC<{ onAdd: (activity: Activity) => void }> = ({ on
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [isAiGenerating, setIsAiGenerating] = useState(false);
-  const [generationStep, setGenerationStep] = useState(0); // 0: Idle, 1: Meta, 2: Image, 3: Final
+  const [generationStep, setGenerationStep] = useState(0); 
   
-  // Fabrika Parametreleri
   const [factoryParams, setFactoryParams] = useState({
     prompt: '',
     ageGroup: '5-7 Yaş',
@@ -38,11 +37,9 @@ const MaterialLibrary: React.FC<{ onAdd: (activity: Activity) => void }> = ({ on
     setGenerationStep(1);
     
     try {
-      // Step 1: Meta & Structure
       const metadata = await aiService.generateMaterial(factoryParams);
       setGenerationStep(2);
       
-      // Step 2 & 3 are handled inside aiService (Metadata contains image if enabled)
       const newMaterial: Activity = {
         ...metadata,
         id: `ai-${Date.now()}`,
@@ -83,7 +80,7 @@ const MaterialLibrary: React.FC<{ onAdd: (activity: Activity) => void }> = ({ on
                 <span className="material-symbols-outlined text-[14px]">precision_manufacturing</span>
                 Clinical Production Engine v6.0
              </div>
-             <h2 className="text-5xl font-black text-slate-900 tracking-tighter italic uppercase">Materyal_Fabrikası</h2>
+             <h2 className="text-5xl font-black text-slate-900 tracking-tighter italic uppercase leading-none">Materyal Fabrikası</h2>
              <p className="text-lg text-slate-500 font-medium tracking-tight max-w-xl italic">Klinik parametrelerle milimetrik içerik üretimi.</p>
           </div>
           
@@ -109,7 +106,7 @@ const MaterialLibrary: React.FC<{ onAdd: (activity: Activity) => void }> = ({ on
            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12">
               <div className="lg:col-span-8 space-y-8">
                  <div className="space-y-2">
-                    <h4 className="text-3xl font-black text-slate-900 italic tracking-tighter uppercase">Konfigürasyon_Paneli</h4>
+                    <h4 className="text-3xl font-black text-slate-900 italic tracking-tighter uppercase leading-none">Yapılandırma Paneli</h4>
                     <p className="text-slate-500 font-medium italic">Materyal üretim algoritması için klinik girişleri belirleyin.</p>
                  </div>
 
@@ -127,7 +124,7 @@ const MaterialLibrary: React.FC<{ onAdd: (activity: Activity) => void }> = ({ on
                       onChange={(v) => setFactoryParams({...factoryParams, goal: v})} 
                     />
                     <div className="space-y-2">
-                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Hedef Fonem (Ses)</label>
+                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Hedef Fonem</label>
                        <input 
                          className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 text-slate-900 font-bold text-sm outline-none focus:border-primary transition-all" 
                          value={factoryParams.targetSound}
@@ -147,7 +144,7 @@ const MaterialLibrary: React.FC<{ onAdd: (activity: Activity) => void }> = ({ on
                  </div>
 
                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Özel Klinik Talimatlar (Opsiyonel)</label>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Özel Klinik Talimatlar</label>
                     <textarea 
                       className="w-full bg-slate-50 border-2 border-slate-100 rounded-3xl px-8 py-6 text-slate-900 placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all font-bold text-lg shadow-inner min-h-[120px] resize-none"
                       placeholder="Spesifik bir kelime listesi veya senaryo ekleyebilirsiniz..."
@@ -159,7 +156,7 @@ const MaterialLibrary: React.FC<{ onAdd: (activity: Activity) => void }> = ({ on
 
               <div className="lg:col-span-4 flex flex-col gap-6">
                  <div className="bg-slate-50 p-8 rounded-[48px] border border-slate-100 space-y-6">
-                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Görsel_Varlık_Stili</h4>
+                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Görsel Stil Tercihi</h4>
                     <div className="space-y-2">
                        {VISUAL_STYLES.map(style => (
                          <button 
@@ -181,15 +178,13 @@ const MaterialLibrary: React.FC<{ onAdd: (activity: Activity) => void }> = ({ on
                    {isAiGenerating ? (
                       <div className="flex flex-col items-center gap-3">
                          <div className="size-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-                         <span className="text-xs tracking-[0.3em] font-black uppercase">
-                            {generationStep === 1 ? 'KLİNİK YAPI OLUŞTURULUYOR' : 'GÖRSEL RENDER EDİLİYOR'}
-                         </span>
+                         <span className="text-xs tracking-[0.3em] font-black uppercase">Üretim Devam Ediyor</span>
                       </div>
                    ) : (
                       <>
                          <div className="flex items-center gap-4">
                             <span className="material-symbols-outlined text-4xl text-primary animate-pulse">rocket_launch</span>
-                            <span>ÜRETİMİ BAŞLAT</span>
+                            <span>Üretimi Başlat</span>
                          </div>
                          <span className="text-[9px] text-slate-500 font-bold uppercase tracking-[0.4em]">Engine: Gemini 3.0 Pro</span>
                       </>
@@ -256,7 +251,7 @@ const MaterialLibrary: React.FC<{ onAdd: (activity: Activity) => void }> = ({ on
                        <span className="material-symbols-outlined text-4xl font-black">auto_awesome</span>
                     </div>
                     <div>
-                       <h3 className="text-4xl font-black text-slate-900 italic tracking-tighter uppercase">ÜRETİM_TAMAMLANDI</h3>
+                       <h3 className="text-4xl font-black text-slate-900 italic tracking-tighter uppercase leading-none">Üretim Tamamlandı</h3>
                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.4em] mt-1">Materyal Özelliklerini Gözden Geçirin</p>
                     </div>
                  </div>
@@ -285,11 +280,11 @@ const MaterialLibrary: React.FC<{ onAdd: (activity: Activity) => void }> = ({ on
 
                     <div className="flex gap-4">
                        <div className="flex-1 p-6 bg-primary/5 rounded-[32px] border border-primary/10">
-                          <div className="text-[9px] font-black text-primary uppercase tracking-widest mb-1">Hedef</div>
+                          <div className="text-[9px] font-black text-primary uppercase tracking-widest mb-1">Hedef Analizi</div>
                           <div className="text-sm font-black text-slate-900">{factoryParams.goal}</div>
                        </div>
                        <div className="flex-1 p-6 bg-emerald-50 rounded-[32px] border border-emerald-100">
-                          <div className="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-1">Seviye</div>
+                          <div className="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-1">Gelişim Seviyesi</div>
                           <div className="text-sm font-black text-slate-900">{factoryParams.ageGroup}</div>
                        </div>
                     </div>
@@ -314,7 +309,7 @@ const MaterialLibrary: React.FC<{ onAdd: (activity: Activity) => void }> = ({ on
                          onClick={confirmAddMaterial}
                          className="px-12 py-5 bg-primary text-white font-black rounded-2xl hover:bg-primary-dark transition-all uppercase text-[11px] tracking-widest shadow-xl shadow-primary/30"
                        >
-                          KÜTÜPHANEYE EKLE
+                          Kütüphaneye Ekle
                        </button>
                     </div>
                  </div>
@@ -325,8 +320,6 @@ const MaterialLibrary: React.FC<{ onAdd: (activity: Activity) => void }> = ({ on
     </div>
   );
 };
-
-// --- Helper Components ---
 
 const FactorySelect: React.FC<{ label: string, value: string, options: string[], onChange: (v: string) => void }> = ({ label, value, options, onChange }) => (
   <div className="space-y-2">

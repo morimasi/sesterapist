@@ -76,13 +76,13 @@ const Community: React.FC = () => {
       {/* Sol Sidebar: Kanallar & DMs */}
       <aside className="w-80 bg-white border-r border-slate-200 flex flex-col shrink-0">
          <div className="p-8 border-b border-slate-50">
-            <h2 className="text-xl font-black text-slate-900 italic tracking-tighter uppercase mb-2">Klinik_Network</h2>
+            <h2 className="text-xl font-black text-slate-900 italic tracking-tighter uppercase mb-2 leading-none">Klinik İletişim Ağı</h2>
             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Global Uzman Ağı v6.0</p>
          </div>
          
          <div className="flex-1 overflow-y-auto p-4 space-y-8 no-scrollbar">
             <section>
-               <h3 className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Uzmanlık_Kanalları</h3>
+               <h3 className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Uzmanlık Kanalları</h3>
                <div className="space-y-1">
                   {MOCK_CHANNELS.map(channel => (
                     <button 
@@ -101,7 +101,7 @@ const Community: React.FC = () => {
             </section>
 
             <section>
-               <h3 className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Direkt_Mesajlar</h3>
+               <h3 className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Direkt Mesajlar</h3>
                <div className="space-y-4 px-4">
                   <DMItem name="Dr. Selin Kaya" status="online" />
                   <DMItem name="Uzm. Dkt. Berk Atan" status="offline" />
@@ -125,8 +125,8 @@ const Community: React.FC = () => {
                   <span className="material-symbols-outlined text-2xl font-black">{activeChannel.icon}</span>
                </div>
                <div className="min-w-0">
-                  <h2 className="text-xl font-black text-slate-900 italic tracking-tighter uppercase truncate">{activeChannel.name}</h2>
-                  <p className="text-[10px] text-slate-400 font-bold truncate">{activeChannel.description}</p>
+                  <h2 className="text-xl font-black text-slate-900 italic tracking-tighter uppercase truncate leading-none">{activeChannel.name}</h2>
+                  <p className="text-[10px] text-slate-400 font-bold truncate uppercase tracking-tight">{activeChannel.description}</p>
                </div>
             </div>
             
@@ -137,7 +137,7 @@ const Community: React.FC = () => {
                  className="flex items-center gap-3 px-6 py-2.5 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-black/20 disabled:opacity-50 active:scale-95"
                >
                   {isSummarizing ? <span className="animate-spin material-symbols-outlined text-[18px]">sync</span> : <span className="material-symbols-outlined text-[18px]">auto_awesome</span>}
-                  TARTIŞMAYI SENTEZLE
+                  Klinik Tartışma Özeti
                </button>
                <button className="p-2.5 text-slate-400 hover:text-slate-900 transition-colors">
                   <span className="material-symbols-outlined">person_add</span>
@@ -159,7 +159,7 @@ const Community: React.FC = () => {
                     <div className="flex items-center justify-between mb-6">
                        <h4 className="text-[11px] font-black text-amber-600 uppercase tracking-[0.3em] flex items-center gap-3">
                           <span className="material-symbols-outlined text-lg">auto_awesome</span>
-                          KLİNİK_TARTIŞMA_SENTEZİ
+                          Klinik Tartışma Sentezi
                        </h4>
                        <button onClick={() => setSummary(null)} className="text-amber-400 hover:text-amber-600"><span className="material-symbols-outlined">close</span></button>
                     </div>
@@ -193,7 +193,7 @@ const Community: React.FC = () => {
             {/* Sağ Panel: Kanal Kaynakları */}
             <aside className="hidden 2xl:flex w-96 border-l border-slate-100 bg-slate-50/30 flex-col p-8 gap-10 overflow-y-auto no-scrollbar">
                <div>
-                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-6">Paylaşılan_Kaynaklar</h3>
+                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-6">Paylaşılan Kaynaklar</h3>
                   <div className="space-y-4">
                      <SharedResource icon="description" title="ICF_Articulation_Guide.pdf" size="2.4 MB" />
                      <SharedResource icon="videocam" title="Therapy_Session_Example.mp4" size="48 MB" />
@@ -202,7 +202,7 @@ const Community: React.FC = () => {
                </div>
 
                <div>
-                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-6">Aktif_Danışmanlar</h3>
+                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-6">Aktif Danışmanlar</h3>
                   <div className="space-y-4">
                      {[1,2,3].map(i => (
                        <div key={i} className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
@@ -256,8 +256,6 @@ const Community: React.FC = () => {
     </div>
   );
 };
-
-// --- Yardımcı Bileşenler ---
 
 const SharedResource: React.FC<{ icon: string, title: string, size: string }> = ({ icon, title, size }) => (
   <div className="p-4 bg-white rounded-2xl border border-slate-100 hover:border-primary/30 hover:shadow-lg transition-all cursor-pointer flex items-center gap-4 group">

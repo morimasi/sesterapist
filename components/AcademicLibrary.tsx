@@ -82,7 +82,7 @@ const AcademicLibrary: React.FC = () => {
                       <span className="material-symbols-outlined text-2xl font-black">clinical_notes</span>
                    </div>
                    <div>
-                      <h3 className="text-2xl font-black text-slate-900 italic tracking-tighter uppercase">KLİNİK_SENTEZ_RAPORU</h3>
+                      <h3 className="text-2xl font-black text-slate-900 italic tracking-tighter uppercase leading-none">Klinik Sentez Raporu</h3>
                       <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Yapay Zeka Destekli Literatür Özetlemesi</p>
                    </div>
                 </div>
@@ -102,7 +102,7 @@ const AcademicLibrary: React.FC = () => {
 
         {papers.length > 0 ? (
           <div className="space-y-6">
-             <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] ml-6">Doğrulanmış Akademik Kaynaklar ({papers.length})</h3>
+             <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] ml-6 tracking-tight">Akademik Kaynaklar ({papers.length})</h3>
              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {papers.map((paper) => (
                   <PaperCard 
@@ -123,12 +123,12 @@ const AcademicLibrary: React.FC = () => {
              <div className="relative z-10 max-w-3xl space-y-10">
                 <div className="inline-flex items-center gap-3 px-4 py-2 bg-primary/10 rounded-full text-[10px] font-black uppercase tracking-widest text-primary border border-primary/20">
                    <span className="material-symbols-outlined text-[14px]">auto_awesome</span>
-                   Powered by Gemini 3.0 Pro & Grounding
+                   Powered by Gemini 3.0 Pro
                 </div>
-                <h3 className="text-7xl font-black tracking-tighter italic leading-[0.9] uppercase">Bilimsel_Veri <br/><span className="text-primary">Klinik_Başarı.</span></h3>
-                <p className="text-slate-400 text-2xl font-medium leading-relaxed italic max-w-2xl">Dünya çapındaki binlerce klinik çalışmaya saniyeler içinde erişin, kanıta dayalı protokolleri seanslarınıza taşıyın.</p>
+                <h3 className="text-7xl font-black tracking-tighter italic leading-[0.9] uppercase leading-none">Bilimsel Veri <br/><span className="text-primary">Klinik Başarı.</span></h3>
+                <p className="text-slate-400 text-2xl font-medium leading-relaxed italic max-w-2xl leading-none">Dünya çapındaki binlerce klinik çalışmaya saniyeler içinde erişin, kanıta dayalı protokolleri seanslarınıza taşıyın.</p>
                 <div className="flex flex-wrap gap-4 pt-6">
-                   {['Bilişsel_Nöro', 'Dil_Gelişimi', 'EBP_Standartları', 'Kanıta_Dayalı'].map(tag => (
+                   {['Bilişsel Nöro', 'Dil Gelişimi', 'EBP Standartları', 'Kanıta Dayalı'].map(tag => (
                      <div key={tag} className="px-8 py-3 bg-white/5 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-white/10 italic text-slate-500 hover:text-white transition-colors cursor-default">#{tag}</div>
                    ))}
                 </div>
@@ -144,7 +144,7 @@ const AcademicLibrary: React.FC = () => {
       {/* Sidebar: Categories */}
       <aside className="w-80 bg-white border-r border-slate-200 flex flex-col p-8 gap-10">
          <div className="space-y-2">
-            <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-6">KATEGORİ_FİLTRESİ</h2>
+            <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-6">Kategori Filtresi</h2>
             <nav className="space-y-2">
                {RESEARCH_CATEGORIES.map(cat => (
                  <button 
@@ -164,7 +164,7 @@ const AcademicLibrary: React.FC = () => {
             <div className="relative z-10">
                <h4 className="text-xl font-black italic mb-2 tracking-tight">Haftalık Bülten</h4>
                <p className="text-[10px] text-slate-400 font-bold uppercase leading-relaxed mb-6">Yeni yayınlanan en iyi 5 makaleyi her Pazartesi e-postana gönderelim.</p>
-               <button className="w-full py-3 bg-primary text-white font-black text-[10px] uppercase rounded-xl shadow-lg shadow-primary/20">ABONE OL</button>
+               <button className="w-full py-3 bg-primary text-white font-black text-[10px] uppercase rounded-xl shadow-lg shadow-primary/20">Abone Ol</button>
             </div>
          </div>
       </aside>
@@ -175,13 +175,13 @@ const AcademicLibrary: React.FC = () => {
          <header className="shrink-0 bg-white/80 backdrop-blur-3xl border-b border-slate-200 p-10 space-y-10 sticky top-0 z-30">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
                <div className="space-y-1">
-                  <h2 className="text-4xl font-black text-slate-900 tracking-tighter italic uppercase">Akademik_Bilgi_Üssü</h2>
+                  <h2 className="text-4xl font-black text-slate-900 tracking-tighter italic uppercase leading-none">Akademik Bilgi Üssü</h2>
                   <p className="text-slate-500 font-medium italic tracking-tight uppercase text-[10px] tracking-widest">Klinik Karar Destek Mekanizması v6.0</p>
                </div>
                <div className="flex bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
                   <button onClick={() => setActiveTab('papers')} className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === 'papers' ? 'bg-white text-slate-900 shadow-xl' : 'text-slate-500'}`}>ARAŞTIRMALAR</button>
                   <button onClick={() => setActiveTab('saved')} className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === 'saved' ? 'bg-white text-slate-900 shadow-xl' : 'text-slate-500'}`}>KAYDEDİLENLER ({savedPapers.length})</button>
-                  <button onClick={() => setActiveTab('videos')} className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === 'videos' ? 'bg-white text-slate-900 shadow-xl' : 'text-slate-500'}`}>VİDEO LECTURES</button>
+                  <button onClick={() => setActiveTab('videos')} className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === 'videos' ? 'bg-white text-slate-900 shadow-xl' : 'text-slate-500'}`}>VİDEO EĞİTİMLER</button>
                </div>
             </div>
 
@@ -215,7 +215,7 @@ const AcademicLibrary: React.FC = () => {
                      <span className="material-symbols-outlined absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-4xl text-primary animate-pulse">auto_awesome</span>
                   </div>
                   <div>
-                     <h3 className="text-2xl font-black text-slate-900 italic tracking-tighter uppercase mb-2">AKADEMİK_VERİLER_DERLENİYOR</h3>
+                     <h3 className="text-2xl font-black text-slate-900 italic tracking-tighter uppercase mb-2">Akademik Veriler Derleniyor</h3>
                      <p className="text-slate-500 font-medium max-w-md">Gemini 3.0 Pro bilimsel veritabanlarını tarıyor ve klinik sentez oluşturuyor. Lütfen bekleyin...</p>
                   </div>
                </div>
@@ -225,8 +225,6 @@ const AcademicLibrary: React.FC = () => {
     </div>
   );
 };
-
-// --- Yardımcı Bileşen: PaperCard ---
 
 const PaperCard: React.FC<{ paper: Paper, onSave: () => void, isSaved: boolean }> = ({ paper, onSave, isSaved }) => (
   <div className="bg-white p-10 rounded-[56px] border border-slate-100 hover:border-primary/30 hover:shadow-3xl transition-all group relative flex flex-col overflow-hidden">
@@ -267,7 +265,7 @@ const PaperCard: React.FC<{ paper: Paper, onSave: () => void, isSaved: boolean }
            <div>
               <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">
                  <span className="material-symbols-outlined text-[14px]">psychology</span>
-                 Klinik_Etki_Analizi
+                 Klinik Etki Analizi
               </div>
               <p className="text-sm text-slate-600 font-medium leading-relaxed italic border-l-4 border-slate-100 pl-4 py-2">
                  "{paper.clinicalImpact}"

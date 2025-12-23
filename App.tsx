@@ -103,12 +103,25 @@ const App: React.FC = () => {
       alert("Bu modül şu an sistem yöneticisi tarafından bakıma alınmıştır.");
       return;
     }
+
+    // Seans Odası Güvenlik & Otomatik Başlatma Mantığı
+    if (view === 'session' && !activeSession) {
+      handleStartSession({
+        id: `quick-${Date.now()}`,
+        clientName: 'Bekleniyor...',
+        startTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        type: 'Hızlı Başlatma',
+        status: 'active'
+      });
+      return;
+    }
+
     setCurrentView(view);
   };
 
   const handleStartSession = (session: SessionMetadata) => {
     setActiveSession({ ...session, flow: sessionFlow });
-    navigateTo('session');
+    setCurrentView('session');
   };
 
   const getModuleConfig = (id: AppView) => modules.find(m => m.id === id)?.config || {};
@@ -117,7 +130,7 @@ const App: React.FC = () => {
     switch (currentView) {
       case 'landing': return <LandingPage onGetStarted={() => navigateTo('login')} />;
       case 'login': return <Auth onLogin={(u) => { setUser(u); navigateTo('dashboard'); }} />;
-      case 'dashboard': return <Dashboard user={user} onStartBuilder={() => navigateTo('builder')} onJoinSession={handleStartSession} onStartAssessment={() => navigateTo('assessment')} />;
+      case 'dashboard': return <Dashboard user={user} onStartBuilder={() => navigateTo('builder')} onJoinSession={handleStartSession} onStartAssessment={() => navigateTo('assessment')} onQuickSession={() => navigateTo('session')} />;
       case 'builder': return (
         <div className="flex flex-1 flex-col md:flex-row overflow-hidden animate-in fade-in duration-500">
           <SidebarLeft onAddActivity={(a) => {
@@ -139,7 +152,7 @@ const App: React.FC = () => {
           />
         </div>
       );
-      case 'session': return <SessionRoom session={activeSession} onEndSession={() => navigateTo('feedback')} />;
+      case 'session': return <SessionRoom session={activeSession} onEndSession={() => { setActiveSession(null); navigateTo('feedback'); }} />;
       case 'progress': return <ProgressReports />;
       case 'library': return <MaterialLibrary config={getModuleConfig('library')} onAdd={(a) => {
           const newActivity = { ...a, id: `session-${Date.now()}` };

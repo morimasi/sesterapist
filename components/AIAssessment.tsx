@@ -9,7 +9,6 @@ const AIAssessment: React.FC<{ config?: Record<string, any> }> = ({ config }) =>
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [report, setReport] = useState<string | null>(null);
   
-  // Detaylı Veri Girişleri
   const [formData, setFormData] = useState({
     observations: '',
     history: '',
@@ -37,8 +36,8 @@ const AIAssessment: React.FC<{ config?: Record<string, any> }> = ({ config }) =>
     try {
       const result = await aiService.analyzeClinicalCase(combinedNotes, {
         ...config,
-        model: 'gemini-3-pro-preview', // Klinik derinlik için Pro model kullanımı
-        thinkingBudget: 32000 // Maksimum akıl yürütme bütçesi
+        model: 'gemini-3-pro-preview', 
+        thinkingBudget: 32000 
       });
       setReport(result || "Analiz hatası.");
     } catch (err) {
@@ -57,10 +56,10 @@ const AIAssessment: React.FC<{ config?: Record<string, any> }> = ({ config }) =>
                <span className="material-symbols-outlined text-3xl">clinical_notes</span>
             </div>
             <div>
-               <h2 className="text-2xl font-black text-slate-900 italic tracking-tighter uppercase">Klinik_Analiz_Merkezi_v6</h2>
+               <h2 className="text-2xl font-black text-slate-900 italic tracking-tighter uppercase leading-none">Klinik Analiz Merkezi</h2>
                <div className="flex items-center gap-3 mt-1">
                   <span className="text-[10px] font-black text-primary uppercase tracking-widest bg-primary/5 px-2 py-0.5 rounded border border-primary/10">Engine: Gemini 3 Pro</span>
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Protocol: ICF_STANDARD_2024</span>
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Protocol: ICF Standard 2024</span>
                </div>
             </div>
          </div>
@@ -82,7 +81,7 @@ const AIAssessment: React.FC<{ config?: Record<string, any> }> = ({ config }) =>
             <div className="flex-1 overflow-y-auto p-8 space-y-8 no-scrollbar">
                {activeTab === 'observations' && (
                  <div className="space-y-6 animate-in fade-in duration-500">
-                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-l-4 border-primary pl-3">Seans_Gözlem_Verileri</h4>
+                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-l-4 border-primary pl-3">Seans Gözlem Verileri</h4>
                     <textarea 
                       value={formData.observations}
                       onChange={(e) => handleInputChange('observations', e.target.value)}
@@ -98,7 +97,7 @@ const AIAssessment: React.FC<{ config?: Record<string, any> }> = ({ config }) =>
 
                {activeTab === 'history' && (
                  <div className="space-y-6 animate-in fade-in duration-500">
-                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-l-4 border-primary pl-3">Vaka_Tıbbi_Geçmişi</h4>
+                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-l-4 border-primary pl-3">Vaka Tıbbi Geçmişi</h4>
                     <textarea 
                       value={formData.history}
                       onChange={(e) => handleInputChange('history', e.target.value)}
@@ -110,7 +109,7 @@ const AIAssessment: React.FC<{ config?: Record<string, any> }> = ({ config }) =>
 
                {activeTab === 'metrics' && (
                  <div className="space-y-8 animate-in fade-in duration-500">
-                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-l-4 border-primary pl-3">Nicel_Klinik_Veriler</h4>
+                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-l-4 border-primary pl-3">Nicel Klinik Veriler</h4>
                     <div className="space-y-6">
                        <RangeInput label="Artikülasyon Başarısı" value={formData.articulationScore} onChange={(v) => handleInputChange('articulationScore', v)} />
                        <RangeInput label="Akıcılık İndeksi" value={formData.fluencyScore} onChange={(v) => handleInputChange('fluencyScore', v)} />
@@ -130,7 +129,7 @@ const AIAssessment: React.FC<{ config?: Record<string, any> }> = ({ config }) =>
                  className="w-full py-5 bg-slate-900 text-white font-black rounded-2xl shadow-2xl hover:bg-black transition-all flex items-center justify-center gap-4 active:scale-95 disabled:opacity-30 disabled:grayscale"
                >
                   {isAnalyzing ? <span className="animate-spin material-symbols-outlined">sync</span> : <span className="material-symbols-outlined text-primary">psychology</span>}
-                  {isAnalyzing ? 'MUHAKEME MOTORU ÇALIŞIYOR...' : 'KLİNİK RAPORU SENTEZLE'}
+                  {isAnalyzing ? 'Muhakeme Motoru Çalışıyor...' : 'Klinik Raporu Sentezle'}
                </button>
             </div>
          </aside>
@@ -155,7 +154,6 @@ const AIAssessment: React.FC<{ config?: Record<string, any> }> = ({ config }) =>
 
             {report ? (
                <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-1000">
-                  {/* Radar Görsel Tahmin (Opsiyonel Mockup) */}
                   <div className="bg-white rounded-[48px] p-10 border border-slate-200 shadow-sm flex items-center gap-12 overflow-hidden relative">
                      <div className="absolute top-0 right-0 p-8 opacity-5">
                         <span className="material-symbols-outlined text-[120px]">insights</span>
@@ -165,8 +163,8 @@ const AIAssessment: React.FC<{ config?: Record<string, any> }> = ({ config }) =>
                         <span className="text-2xl font-black text-primary italic">%{formData.articulationScore}</span>
                      </div>
                      <div className="flex-1 space-y-4">
-                        <h4 className="text-xl font-black text-slate-900 italic uppercase">Klinik_Sentez_Özeti</h4>
-                        <p className="text-sm text-slate-500 leading-relaxed font-medium">Bu rapor, girilen {formData.observations.length} karakterlik gözlem verisi ve ICF protokolü temel alınarak yapay zeka tarafından oluşturulmuştur.</p>
+                        <h4 className="text-xl font-black text-slate-900 italic uppercase tracking-tight">Klinik Sentez Özeti</h4>
+                        <p className="text-sm text-slate-500 leading-relaxed font-medium">Bu rapor, girilen veriler ve ICF protokolü temel alınarak yapay zeka tarafından oluşturulmuştur.</p>
                         <div className="flex gap-4">
                            <span className="px-3 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase rounded-lg border border-emerald-100">Güven Skoru: %94</span>
                            <span className="px-3 py-1 bg-primary/5 text-primary text-[10px] font-black uppercase rounded-lg border border-primary/10">ICF Eşleşmesi: Tam</span>
@@ -174,7 +172,6 @@ const AIAssessment: React.FC<{ config?: Record<string, any> }> = ({ config }) =>
                      </div>
                   </div>
 
-                  {/* Ana Rapor İçeriği */}
                   <div className="bg-white rounded-[56px] p-16 border border-slate-200 shadow-2xl relative">
                      <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed whitespace-pre-wrap font-medium text-lg">
                         {report}
@@ -193,8 +190,6 @@ const AIAssessment: React.FC<{ config?: Record<string, any> }> = ({ config }) =>
     </div>
   );
 };
-
-// --- Alt Bileşenler ---
 
 const TabButton: React.FC<{ active: boolean, label: string, onClick: () => void }> = ({ active, label, onClick }) => (
   <button 

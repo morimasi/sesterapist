@@ -7,9 +7,10 @@ interface DashboardProps {
   onStartBuilder: () => void;
   onJoinSession: (session: SessionMetadata) => void;
   onStartAssessment?: () => void;
+  onQuickSession?: () => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ user, onStartBuilder, onJoinSession, onStartAssessment }) => {
+const Dashboard: React.FC<DashboardProps> = ({ user, onStartBuilder, onJoinSession, onStartAssessment, onQuickSession }) => {
   return (
     <div className="flex-1 overflow-y-auto bg-slate-50/50 p-6 md:p-10">
       <div className="max-w-7xl mx-auto space-y-12">
@@ -24,14 +25,14 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onStartBuilder, onJoinSessi
           <div className="flex gap-4">
             <button 
               onClick={onStartBuilder}
-              className="flex items-center gap-3 bg-white text-slate-800 px-8 py-4 rounded-2xl font-black border-2 border-slate-100 hover:border-primary/20 hover:shadow-2xl transition-all active:scale-95 shadow-sm"
+              className="flex items-center gap-3 bg-white text-slate-800 px-8 py-4 rounded-2xl font-bold border-2 border-slate-100 hover:border-primary/20 hover:shadow-2xl transition-all active:scale-95 shadow-sm"
             >
               <span className="material-symbols-outlined text-primary">auto_fix</span>
-              Yeni_Materyal_Tasarla
+              Yeni Materyal Tasarla
             </button>
-            <button className="flex items-center gap-3 bg-slate-900 text-white px-8 py-4 rounded-2xl font-black shadow-xl shadow-slate-900/10 hover:bg-black transition-all active:scale-95">
+            <button className="flex items-center gap-3 bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold shadow-xl shadow-slate-900/10 hover:bg-black transition-all active:scale-95">
               <span className="material-symbols-outlined">add</span>
-              SEANS_PLANLA
+              Seans Planla
             </button>
           </div>
         </div>
@@ -45,7 +46,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onStartBuilder, onJoinSessi
               </div>
               <div className="flex items-center justify-between mb-10 relative z-10">
                 <h3 className="text-2xl font-black text-slate-900 tracking-tight">Günün Randevuları</h3>
-                <span className="px-4 py-1.5 bg-slate-100 rounded-full text-[10px] font-black uppercase text-slate-500">7 Seans Kalan</span>
+                <span className="px-4 py-1.5 bg-slate-100 rounded-full text-[10px] font-black uppercase text-slate-500 tracking-widest">7 SEANS KALAN</span>
               </div>
               
               <div className="space-y-4 relative z-10">
@@ -53,7 +54,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onStartBuilder, onJoinSessi
                   name="Ahmet Yılmaz" 
                   time="14:30" 
                   type="Artikülasyon" 
-                  status="CANLI_MOD" 
+                  status="Canlı Mod" 
                   active
                   onJoin={() => onJoinSession({ id: '1', clientName: 'Ahmet Yılmaz', startTime: '14:30', type: 'Artikülasyon' })}
                 />
@@ -61,14 +62,14 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onStartBuilder, onJoinSessi
                   name="Elif Demir" 
                   time="16:00" 
                   type="Dil Gelişimi" 
-                  status="HAZIR" 
+                  status="Hazır" 
                   onJoin={() => {}}
                 />
                 <AppointmentCard 
                   name="Caner Öz" 
                   time="17:15" 
                   type="Kekemelik" 
-                  status="BEKLEMEDE" 
+                  status="Beklemede" 
                   onJoin={() => {}}
                 />
               </div>
@@ -77,16 +78,16 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onStartBuilder, onJoinSessi
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                <div onClick={onStartAssessment} className="bg-indigo-600 rounded-[40px] p-8 text-white shadow-2xl shadow-indigo-600/20 group cursor-pointer relative overflow-hidden">
                   <div className="relative z-10">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-indigo-200 mb-2 block">Klinik_Analiz_Motoru</span>
-                    <h4 className="text-4xl font-black italic mb-4">12_Yeni_Rapor</h4>
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-200 mb-2 block">Klinik Analiz Motoru</span>
+                    <h4 className="text-4xl font-black italic mb-4">12 Yeni Rapor</h4>
                     <p className="text-indigo-100 text-sm font-medium leading-relaxed">AI tarafından hazırlanan derinlemesine vaka analizlerini incele.</p>
                   </div>
                   <span className="material-symbols-outlined absolute -bottom-4 -right-4 text-9xl text-white/10 group-hover:rotate-12 transition-transform">psychology</span>
                </div>
                <div className="bg-emerald-500 rounded-[40px] p-8 text-white shadow-2xl shadow-emerald-500/20 group cursor-pointer relative overflow-hidden">
                   <div className="relative z-10">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-100 mb-2 block">Materyal_Kütüphanesi</span>
-                    <h4 className="text-4xl font-black italic mb-4">48_Aktif_Öğe</h4>
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-100 mb-2 block">Materyal Kütüphanesi</span>
+                    <h4 className="text-4xl font-black italic mb-4">48 Aktif Öğe</h4>
                     <p className="text-emerald-50 text-sm font-medium leading-relaxed">Yeni nesil Gemini 3.0 Flash ile üretilen interaktif araçlar.</p>
                   </div>
                   <span className="material-symbols-outlined absolute -bottom-4 -right-4 text-9xl text-white/10 group-hover:rotate-12 transition-transform">book_4</span>
@@ -97,15 +98,15 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onStartBuilder, onJoinSessi
           {/* Side Column: Quick Access & Academic */}
           <div className="lg:col-span-4 space-y-10">
              <section className="bg-white rounded-[40px] border border-slate-200/60 p-8 shadow-sm">
-                <h3 className="font-black text-slate-900 mb-8 flex items-center gap-3">
+                <h3 className="font-black text-slate-900 mb-8 flex items-center gap-3 tracking-tight">
                    <span className="material-symbols-outlined text-primary">bolt</span>
-                   HIZLI_AKSIYONLAR
+                   Hızlı Aksiyonlar
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
-                  <QuickAction icon="mic" label="Ses Kaydet" color="text-rose-600 bg-rose-50" />
-                  <QuickAction icon="videocam" label="Canlı Oda" color="text-primary bg-sky-50" />
-                  <QuickAction icon="auto_fix" label="AI Materyal" color="text-amber-600 bg-amber-50" />
-                  <QuickAction icon="person_add" label="Yeni Danışan" color="text-emerald-600 bg-emerald-50" />
+                  <QuickAction icon="mic" label="Ses Kaydet" color="text-rose-600 bg-rose-50" onClick={() => {}} />
+                  <QuickAction icon="videocam" label="Canlı Oda" color="text-primary bg-sky-50" onClick={onQuickSession || (() => {})} />
+                  <QuickAction icon="auto_fix" label="AI Materyal" color="text-amber-600 bg-amber-50" onClick={onStartBuilder} />
+                  <QuickAction icon="person_add" label="Yeni Danışan" color="text-emerald-600 bg-emerald-50" onClick={() => {}} />
                 </div>
              </section>
 
@@ -113,7 +114,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onStartBuilder, onJoinSessi
                 <span className="material-symbols-outlined absolute -bottom-10 -right-10 text-[200px] text-white/5 -rotate-12">school</span>
                 <div className="relative z-10 space-y-6">
                    <div className="flex items-center justify-between">
-                      <h3 className="text-xl font-black italic">Akademik_Takip</h3>
+                      <h3 className="text-xl font-black italic tracking-tight">Akademik Takip</h3>
                       <button className="size-8 bg-white/10 rounded-lg flex items-center justify-center hover:bg-white/20 transition-all"><span className="material-symbols-outlined text-sm">open_in_new</span></button>
                    </div>
                    <div className="space-y-4">
@@ -148,8 +149,8 @@ const AppointmentCard: React.FC<{ name: string, time: string, type: string, stat
   </div>
 );
 
-const QuickAction: React.FC<{ icon: string, label: string, color: string }> = ({ icon, label, color }) => (
-  <button className="flex flex-col items-center justify-center gap-3 p-6 rounded-3xl hover:bg-white hover:shadow-xl transition-all border border-transparent hover:border-slate-100 group">
+const QuickAction: React.FC<{ icon: string, label: string, color: string, onClick: () => void }> = ({ icon, label, color, onClick }) => (
+  <button onClick={onClick} className="flex flex-col items-center justify-center gap-3 p-6 rounded-3xl hover:bg-white hover:shadow-xl transition-all border border-transparent hover:border-slate-100 group">
     <div className={`size-14 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform ${color} shadow-lg shadow-black/5`}>
       <span className="material-symbols-outlined text-2xl font-bold">{icon}</span>
     </div>
