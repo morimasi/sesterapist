@@ -24,22 +24,19 @@ import QualityControl from './components/QualityControl';
 import DeploymentDashboard from './components/DeploymentDashboard';
 import MarketingDashboard from './components/MarketingDashboard';
 import AdminPortal from './components/AdminPortal';
-import { Activity, AppView, User, SessionMetadata, ModuleDefinition } from './types';
+import { Activity, AppView, User, SessionMetadata, PlatformModule } from './types';
 import { INITIAL_SESSION_FLOW } from './constants';
 
-const MODULE_REGISTRY: ModuleDefinition[] = [
-  { id: 'dashboard', label: 'Panel', icon: 'dashboard', roles: ['therapist', 'client', 'admin'], category: 'core' },
-  { id: 'builder', label: 'Planlayıcı', icon: 'construction', roles: ['therapist', 'admin'], category: 'clinical' },
-  { id: 'library', label: 'Kütüphane', icon: 'book', roles: ['therapist', 'client', 'admin'], category: 'core' },
-  { id: 'progress', label: 'Gelişim', icon: 'trending_up', roles: ['therapist', 'client', 'admin'], category: 'clinical' },
-  { id: 'assessment', label: 'Analiz', icon: 'psychology', roles: ['therapist', 'admin'], category: 'clinical' },
-  { id: 'community', label: 'Topluluk', icon: 'group', roles: ['therapist', 'admin'], category: 'core' },
-  { id: 'academic', label: 'Akademik', icon: 'school', roles: ['therapist', 'admin'], category: 'core' },
-  { id: 'admin_portal', label: 'Yönetim', icon: 'admin_panel_settings', roles: ['admin'], category: 'admin' },
-  { id: 'help', label: 'Yardım', icon: 'help', roles: ['therapist', 'client', 'admin'], category: 'core' },
-  { id: 'qa', label: 'QA', icon: 'terminal', roles: ['admin'], category: 'admin' },
-  { id: 'deployment', label: 'Bulut', icon: 'cloud', roles: ['admin'], category: 'admin' },
-  { id: 'marketing', label: 'Growth', icon: 'rocket_launch', roles: ['admin'], category: 'growth' },
+const DEFAULT_MODULES: PlatformModule[] = [
+  { id: 'dashboard', name: 'Panel', icon: 'dashboard', enabled: true, minRole: 'client', category: 'core', description: 'Ana yönetim ekranı.', config: {} },
+  { id: 'builder', name: 'Planlayıcı', icon: 'construction', enabled: true, minRole: 'therapist', category: 'clinical', description: 'Seans akışı tasarlama aracı.', config: {} },
+  { id: 'library', name: 'Kütüphane', icon: 'book', enabled: true, minRole: 'client', category: 'core', description: 'Materyal ve oyun deposu.', config: {} },
+  { id: 'progress', name: 'Gelişim', icon: 'trending_up', enabled: true, minRole: 'client', category: 'clinical', description: 'Klinik ilerleme raporları.', config: {} },
+  { id: 'assessment', name: 'AI Analiz', icon: 'psychology', enabled: true, minRole: 'therapist', category: 'clinical', description: 'Vaka analizi ve ICF raporlama.', config: { model: 'gemini-3-flash-preview', thinkingBudget: 16000 } },
+  { id: 'community', name: 'Topluluk', icon: 'group', enabled: true, minRole: 'therapist', category: 'core', description: 'Uzmanlar arası vaka tartışması.', config: {} },
+  { id: 'academic', name: 'Akademik', icon: 'school', enabled: true, minRole: 'therapist', category: 'core', description: 'Bilimsel literatür tarama.', config: { googleSearch: true } },
+  { id: 'admin_portal', name: 'Yönetim', icon: 'admin_panel_settings', enabled: true, minRole: 'admin', category: 'admin', description: 'Sistem yönetimi.', config: {} },
+  { id: 'session', name: 'Seans Odası', icon: 'videocam', enabled: true, minRole: 'therapist', category: 'clinical', description: 'Görüntülü seans ve canlı AI analizi.', config: { samplingRate: 16000, voice: 'Kore' } },
 ];
 
 const App: React.FC = () => {
@@ -47,6 +44,16 @@ const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(() => {
     const saved = localStorage.getItem('theraspeech_user');
     return saved ? JSON.parse(saved) : null;
+  });
+
+  const [modules, setModules] = useState<PlatformModule[]>(() => {
+    const saved = localStorage.getItem('theraspeech_modules');
+    return saved ? JSON.parse(saved) : DEFAULT_MODULES;
+  });
+
+  const [users, setUsers] = useState<User[]>(() => {
+     const saved = localStorage.getItem('theraspeech_all_users');
+     return saved ? JSON.parse(saved) : [];
   });
   
   const [activeSession, setActiveSession] = useState<SessionMetadata | null>(null);
@@ -62,12 +69,20 @@ const App: React.FC = () => {
     animationsEnabled: true,
   });
 
+  // State'ler değiştiğinde localStorage'ı güncelle
   useEffect(() => {
     if (user) localStorage.setItem('theraspeech_user', JSON.stringify(user));
     localStorage.setItem('theraspeech_flow', JSON.stringify(sessionFlow));
-  }, [user, sessionFlow]);
+    localStorage.setItem('theraspeech_modules', JSON.stringify(modules));
+  }, [user, sessionFlow, modules]);
 
   const navigateTo = (view: AppView) => {
+    // Modül devre dışıysa erişimi engelle (Admin hariç)
+    const targetMod = modules.find(m => m.id === view);
+    if (targetMod && !targetMod.enabled && user?.role !== 'admin') {
+      alert("Bu modül şu an sistem yöneticisi tarafından bakıma alınmıştır.");
+      return;
+    }
     setCurrentView(view);
   };
 
@@ -124,7 +139,7 @@ const App: React.FC = () => {
       case 'qa': return <QualityControl />;
       case 'deployment': return <DeploymentDashboard />;
       case 'marketing': return <MarketingDashboard />;
-      case 'admin_portal': return <AdminPortal />;
+      case 'admin_portal': return <AdminPortal modules={modules} onUpdateModules={setModules} users={users} onUpdateUsers={setUsers} />;
       default: return <LandingPage onGetStarted={() => navigateTo('login')} />;
     }
   };
@@ -135,7 +150,7 @@ const App: React.FC = () => {
         currentView={currentView} 
         user={user} 
         onNavigate={navigateTo} 
-        modules={MODULE_REGISTRY}
+        modules={modules} 
       />
       
       <main className="flex-1 flex flex-col overflow-hidden relative">

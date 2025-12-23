@@ -1,12 +1,12 @@
 
 import React from 'react';
-import { AppView, User, ModuleDefinition } from '../types';
+import { AppView, User, PlatformModule } from '../types';
 
 interface HeaderProps {
   currentView: AppView;
   user: User | null;
   onNavigate: (view: AppView) => void;
-  modules: ModuleDefinition[];
+  modules: PlatformModule[];
 }
 
 const Header: React.FC<HeaderProps> = ({ currentView, user, onNavigate, modules }) => {
@@ -15,8 +15,21 @@ const Header: React.FC<HeaderProps> = ({ currentView, user, onNavigate, modules 
 
   if (isSession) return null;
 
-  const coreModules = modules.filter(m => m.category === 'core' || m.category === 'clinical');
-  const adminModules = modules.filter(m => m.category === 'admin' || m.category === 'growth');
+  // Sadece aktif olan ve kullanıcının rolüne izin verilen modülleri filtrele
+  const visibleModules = modules.filter(m => {
+    if (!m.enabled && user?.role !== 'admin') return false;
+    if (!user) return false;
+    
+    // Admin her şeyi görür, diğerleri yetkiye göre
+    if (user.role === 'admin') return true;
+    if (m.minRole === 'admin') return false;
+    if (m.minRole === 'therapist' && user.role === 'client') return false;
+    
+    return true;
+  });
+  
+  const coreModules = visibleModules.filter(m => m.category === 'core' || m.category === 'clinical');
+  const adminModules = visibleModules.filter(m => m.category === 'admin' || m.category === 'growth');
 
   return (
     <header className={`h-16 flex items-center justify-between px-6 shrink-0 z-30 transition-all ${isLanding ? 'bg-transparent border-transparent' : 'bg-surface border-b border-border shadow-sm'}`}>
@@ -35,24 +48,26 @@ const Header: React.FC<HeaderProps> = ({ currentView, user, onNavigate, modules 
             <HeaderLink 
               key={mod.id}
               icon={mod.icon} 
-              label={mod.label} 
+              label={mod.name} 
               active={currentView === mod.id} 
               onClick={() => onNavigate(mod.id)} 
             />
           ))}
           
-          <div className="flex items-center gap-1 border-l border-border ml-2 pl-2">
-            {adminModules.map(mod => (
-              <button 
-                key={mod.id}
-                onClick={() => onNavigate(mod.id)}
-                className={`p-2 rounded-lg transition-all ${currentView === mod.id ? 'text-primary bg-primary/10' : 'text-slate-300 hover:text-slate-600'}`}
-                title={mod.label}
-              >
-                <span className="material-symbols-outlined text-[18px]">{mod.icon}</span>
-              </button>
-            ))}
-          </div>
+          {adminModules.length > 0 && (
+            <div className="flex items-center gap-1 border-l border-border ml-2 pl-2">
+              {adminModules.map(mod => (
+                <button 
+                  key={mod.id}
+                  onClick={() => onNavigate(mod.id)}
+                  className={`p-2 rounded-lg transition-all ${currentView === mod.id ? 'text-primary bg-primary/10' : 'text-slate-300 hover:text-slate-600'}`}
+                  title={mod.name}
+                >
+                  <span className="material-symbols-outlined text-[18px]">{mod.icon}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </nav>
       )}
 
@@ -61,7 +76,9 @@ const Header: React.FC<HeaderProps> = ({ currentView, user, onNavigate, modules 
           <div className="flex items-center gap-3">
              <div className="hidden lg:block text-right">
                 <div className="text-xs font-bold text-slate-900 leading-none">{user.name}</div>
-                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">{user.role === 'therapist' ? 'Uzman Terapist' : 'Danışan'}</div>
+                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">
+                  {user.role === 'admin' ? 'Sistem Yöneticisi' : user.role === 'therapist' ? 'Uzman Terapist' : 'Danışan'}
+                </div>
              </div>
             <div 
               onClick={() => onNavigate('settings')}

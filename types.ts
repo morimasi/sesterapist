@@ -19,11 +19,14 @@ export interface User {
 }
 
 export interface PlatformModule {
-  id: string;
+  id: AppView;
   name: string;
+  icon: string;
   enabled: boolean;
   minRole: UserRole;
   description: string;
+  category: 'core' | 'clinical' | 'growth' | 'admin';
+  config: Record<string, any>;
 }
 
 export interface GlobalStats {
