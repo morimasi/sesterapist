@@ -1,10 +1,22 @@
 
 import React, { useState } from 'react';
 
-const MOCK_ASSETS = [
+type AssetStatus = 'Downloaded' | 'Downloading' | 'Available';
+
+interface OfflineAsset {
+  id: number;
+  title: string;
+  size: string;
+  status: AssetStatus;
+  date: string;
+  progress?: number;
+}
+
+const MOCK_ASSETS: OfflineAsset[] = [
   { id: 1, title: "Pop the Bubble (R)", size: "4.2 MB", status: "Downloaded", date: "12 Mart" },
-  { id: 2, title: "Jungle Memory", size: "12.8 MB", status: "Available", date: "-" },
+  { id: 2, title: "Jungle Memory", size: "12.8 MB", status: "Downloading", date: "-", progress: 65 },
   { id: 3, title: "Cloud Breathing", size: "2.1 MB", status: "Downloaded", date: "10 Mart" },
+  { id: 4, title: "Farm Animals Cards", size: "8.5 MB", status: "Available", date: "-" },
 ];
 
 const OfflineModule: React.FC = () => {
@@ -35,7 +47,7 @@ const OfflineModule: React.FC = () => {
         <div className="bg-emerald-50 border border-emerald-100 rounded-3xl p-6 flex items-center justify-between">
            <div className="flex items-center gap-4">
               <div className="size-10 bg-white rounded-xl flex items-center justify-center text-emerald-500">
-                 <span className="material-symbols-outlined">sync</span>
+                 <span className="material-symbols-outlined animate-spin-slow">sync</span>
               </div>
               <div>
                  <div className="text-sm font-bold text-emerald-900">Senkronizasyon Hazır</div>
@@ -49,23 +61,52 @@ const OfflineModule: React.FC = () => {
         <section className="bg-white rounded-[32px] border border-border p-8 shadow-sm">
            <div className="flex items-center justify-between mb-8">
               <h3 className="text-xl font-bold text-slate-800">İndirilen Materyaller</h3>
-              <button className="text-primary font-bold text-sm hover:underline">Tümünü İndir</button>
+              <div className="flex gap-2">
+                <button className="text-primary font-bold text-sm hover:underline flex items-center gap-1">
+                   <span className="material-symbols-outlined text-sm">download</span> Tümünü İndir
+                </button>
+              </div>
            </div>
            <div className="space-y-4">
               {MOCK_ASSETS.map(asset => (
-                <div key={asset.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-transparent hover:border-border transition-all">
-                   <div className="flex items-center gap-4">
-                      <div className={`size-12 rounded-xl flex items-center justify-center ${asset.status === 'Downloaded' ? 'bg-emerald-100 text-emerald-600' : 'bg-white text-slate-400'}`}>
-                         <span className="material-symbols-outlined">{asset.status === 'Downloaded' ? 'check_circle' : 'download'}</span>
+                <div key={asset.id} className="group flex flex-col p-4 bg-slate-50 rounded-2xl border border-transparent hover:border-slate-200 transition-all">
+                   <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                         <div className={`size-12 rounded-xl flex items-center justify-center transition-colors ${
+                            asset.status === 'Downloaded' ? 'bg-emerald-100 text-emerald-600' : 
+                            asset.status === 'Downloading' ? 'bg-primary/10 text-primary' : 'bg-white text-slate-400 border border-slate-100'
+                         }`}>
+                            <span className={`material-symbols-outlined ${asset.status === 'Downloading' ? 'animate-spin' : ''}`}>
+                               {asset.status === 'Downloaded' ? 'check_circle' : 
+                                asset.status === 'Downloading' ? 'sync' : 'cloud_download'}
+                            </span>
+                         </div>
+                         <div>
+                            <div className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                               {asset.title}
+                               <StatusBadge status={asset.status} />
+                            </div>
+                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                               {asset.size} • {asset.status === 'Downloaded' ? `İndirildi: ${asset.date}` : asset.status === 'Downloading' ? `%${asset.progress} tamamlandı` : 'İndirmeye Hazır'}
+                            </div>
+                         </div>
                       </div>
-                      <div>
-                         <div className="text-sm font-bold text-slate-800">{asset.title}</div>
-                         <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{asset.size} • {asset.status === 'Downloaded' ? asset.date : 'Hazır'}</div>
+                      <div className="flex items-center gap-2">
+                         {asset.status === 'Available' && (
+                           <button className="px-4 py-2 bg-primary/10 text-primary text-[10px] font-black uppercase rounded-lg hover:bg-primary hover:text-white transition-all">
+                              İndir
+                           </button>
+                         )}
+                         <button className="p-2 hover:bg-white rounded-lg text-slate-400 hover:text-rose-500 transition-all">
+                            <span className="material-symbols-outlined text-[20px]">{asset.status === 'Downloaded' ? 'delete' : 'close'}</span>
+                         </button>
                       </div>
                    </div>
-                   <button className="p-2 hover:bg-slate-200 rounded-lg text-slate-400 transition-colors">
-                      <span className="material-symbols-outlined text-[20px]">{asset.status === 'Downloaded' ? 'delete' : 'cloud_download'}</span>
-                   </button>
+                   {asset.status === 'Downloading' && (
+                      <div className="mt-4 h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+                         <div className="h-full bg-primary transition-all duration-500" style={{ width: `${asset.progress}%` }}></div>
+                      </div>
+                   )}
                 </div>
               ))}
            </div>
@@ -82,6 +123,26 @@ const OfflineModule: React.FC = () => {
         </section>
       </div>
     </div>
+  );
+};
+
+const StatusBadge: React.FC<{ status: AssetStatus }> = ({ status }) => {
+  const styles = {
+    Downloaded: 'bg-emerald-50 text-emerald-600 border-emerald-100',
+    Downloading: 'bg-primary/5 text-primary border-primary/10',
+    Available: 'bg-slate-100 text-slate-500 border-slate-200'
+  };
+
+  const labels = {
+    Downloaded: 'İndirildi',
+    Downloading: 'İndiriliyor',
+    Available: 'Bulutta'
+  };
+
+  return (
+    <span className={`text-[9px] font-black uppercase tracking-tight px-2 py-0.5 rounded-md border ${styles[status]}`}>
+      {labels[status]}
+    </span>
   );
 };
 

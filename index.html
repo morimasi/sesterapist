@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TheraSpeech - AI Speech Therapy</title>
+    <title>TheraSpeech - AI Speech Therapy Platform</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,9 +15,9 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: "#0EA5E9", // Vibrant Blue
-                        secondary: "#F59E0B", // Energetic Amber
-                        success: "#10B981", // Growth Green
+                        primary: "#0EA5E9",
+                        secondary: "#F59E0B",
+                        success: "#10B981",
                         background: "#F8FAFC",
                         surface: "#FFFFFF",
                         border: "#E2E8F0",
@@ -28,8 +28,23 @@
                     },
                     animation: {
                         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'float-slow': 'float 8s ease-in-out infinite',
-                        'wave': 'wave 3s ease-in-out infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'morph': 'morph 8s ease-in-out infinite',
+                        'shimmer': 'shimmer 2s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-15px)' },
+                        },
+                        morph: {
+                            '0%, 100%': { borderRadius: '40% 60% 70% 30% / 40% 50% 60% 50%' },
+                            '50%': { borderRadius: '60% 40% 30% 70% / 50% 60% 40% 60%' },
+                        },
+                        shimmer: {
+                            '0%': { backgroundPosition: '-200% 0' },
+                            '100%': { backgroundPosition: '200% 0' },
+                        }
                     }
                 }
             }
@@ -42,33 +57,39 @@
         .material-symbols-outlined.filled {
             font-variation-settings: 'FILL' 1;
         }
-        .glass {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        .dark-glass {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .gradient-border {
+            position: relative;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(to right, #0EA5E9, #6366F1) border-box;
+            border: 2px solid transparent;
+        }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(2deg); }
+        body {
+            overscroll-behavior-y: none;
         }
-        @keyframes wave {
-            0%, 100% { transform: scaleY(1); }
-            50% { transform: scaleY(1.8); }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
         }
-        .sound-wave-bar {
-            transform-origin: bottom;
-            animation: wave 1.5s ease-in-out infinite;
-        }
-        .gradient-text {
-            background: linear-gradient(135deg, #0EA5E9 0%, #6366F1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
     </style>
     <script type="importmap">
@@ -82,7 +103,7 @@
 }
 </script>
 </head>
-<body class="bg-background text-slate-900 font-sans h-screen overflow-hidden">
+<body class="bg-background text-slate-900 font-sans h-screen overflow-hidden antialiased">
     <div id="root"></div>
 </body>
 </html>
