@@ -1,17 +1,36 @@
 
-export type AppView = 'landing' | 'login' | 'dashboard' | 'builder' | 'session' | 'progress' | 'library' | 'gamification' | 'booking' | 'settings' | 'academic' | 'community' | 'offline' | 'feedback' | 'assessment' | 'help' | 'qa' | 'deployment' | 'marketing';
+export type AppView = 'landing' | 'login' | 'dashboard' | 'builder' | 'session' | 'progress' | 'library' | 'gamification' | 'booking' | 'settings' | 'academic' | 'community' | 'offline' | 'feedback' | 'assessment' | 'help' | 'qa' | 'deployment' | 'marketing' | 'admin_portal';
+
+export type UserRole = 'therapist' | 'client' | 'admin';
 
 export interface User {
   id: string;
   name: string;
-  role: 'therapist' | 'client';
+  role: UserRole;
   avatar?: string;
   email?: string;
+  status: 'active' | 'suspended' | 'pending';
+  lastSeen?: string;
   subscription?: {
     plan: 'Free' | 'Basic' | 'Pro' | 'Clinic';
     status: 'active' | 'past_due' | 'canceled';
     nextBillingDate: string;
   };
+}
+
+export interface PlatformModule {
+  id: string;
+  name: string;
+  enabled: boolean;
+  minRole: UserRole;
+  description: string;
+}
+
+export interface GlobalStats {
+  totalRevenue: number;
+  activeSessions: number;
+  apiUsage: number;
+  serverHealth: number;
 }
 
 export interface ActivitySettings {
@@ -39,8 +58,10 @@ export interface Category {
 export interface SessionMetadata {
   id: string;
   clientName: string;
+  therapistName?: string;
   startTime: string;
   type: string;
+  status: 'active' | 'completed' | 'scheduled';
   flow?: Activity[];
 }
 
@@ -97,13 +118,10 @@ export interface Campaign {
   status: 'active' | 'paused' | 'completed';
 }
 
-/**
- * Modül Tanımı: Her bir bağımsız bölümün meta verisi
- */
 export interface ModuleDefinition {
   id: AppView;
   label: string;
   icon: string;
-  roles: ('therapist' | 'client' | 'admin')[];
+  roles: UserRole[];
   category: 'core' | 'clinical' | 'growth' | 'admin';
 }

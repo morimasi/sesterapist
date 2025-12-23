@@ -23,18 +23,20 @@ import HelpCenter from './components/HelpCenter';
 import QualityControl from './components/QualityControl';
 import DeploymentDashboard from './components/DeploymentDashboard';
 import MarketingDashboard from './components/MarketingDashboard';
+import AdminPortal from './components/AdminPortal';
 import { Activity, AppView, User, SessionMetadata, ModuleDefinition } from './types';
 import { INITIAL_SESSION_FLOW } from './constants';
 
 const MODULE_REGISTRY: ModuleDefinition[] = [
-  { id: 'dashboard', label: 'Panel', icon: 'dashboard', roles: ['therapist', 'client'], category: 'core' },
-  { id: 'builder', label: 'Planlayıcı', icon: 'construction', roles: ['therapist'], category: 'clinical' },
-  { id: 'library', label: 'Kütüphane', icon: 'book', roles: ['therapist', 'client'], category: 'core' },
-  { id: 'progress', label: 'Gelişim', icon: 'trending_up', roles: ['therapist', 'client'], category: 'clinical' },
-  { id: 'assessment', label: 'Analiz', icon: 'psychology', roles: ['therapist'], category: 'clinical' },
-  { id: 'community', label: 'Topluluk', icon: 'group', roles: ['therapist'], category: 'core' },
-  { id: 'academic', label: 'Akademik', icon: 'school', roles: ['therapist'], category: 'core' },
-  { id: 'help', label: 'Yardım', icon: 'help', roles: ['therapist', 'client'], category: 'core' },
+  { id: 'dashboard', label: 'Panel', icon: 'dashboard', roles: ['therapist', 'client', 'admin'], category: 'core' },
+  { id: 'builder', label: 'Planlayıcı', icon: 'construction', roles: ['therapist', 'admin'], category: 'clinical' },
+  { id: 'library', label: 'Kütüphane', icon: 'book', roles: ['therapist', 'client', 'admin'], category: 'core' },
+  { id: 'progress', label: 'Gelişim', icon: 'trending_up', roles: ['therapist', 'client', 'admin'], category: 'clinical' },
+  { id: 'assessment', label: 'Analiz', icon: 'psychology', roles: ['therapist', 'admin'], category: 'clinical' },
+  { id: 'community', label: 'Topluluk', icon: 'group', roles: ['therapist', 'admin'], category: 'core' },
+  { id: 'academic', label: 'Akademik', icon: 'school', roles: ['therapist', 'admin'], category: 'core' },
+  { id: 'admin_portal', label: 'Yönetim', icon: 'admin_panel_settings', roles: ['admin'], category: 'admin' },
+  { id: 'help', label: 'Yardım', icon: 'help', roles: ['therapist', 'client', 'admin'], category: 'core' },
   { id: 'qa', label: 'QA', icon: 'terminal', roles: ['admin'], category: 'admin' },
   { id: 'deployment', label: 'Bulut', icon: 'cloud', roles: ['admin'], category: 'admin' },
   { id: 'marketing', label: 'Growth', icon: 'rocket_launch', roles: ['admin'], category: 'growth' },
@@ -86,7 +88,6 @@ const App: React.FC = () => {
   };
 
   const renderModule = () => {
-    // Bağımsız Modül Render Mantığı
     switch (currentView) {
       case 'landing': return <LandingPage onGetStarted={() => navigateTo('login')} />;
       case 'login': return <Auth onLogin={(u) => { setUser(u); navigateTo('dashboard'); }} />;
@@ -123,6 +124,7 @@ const App: React.FC = () => {
       case 'qa': return <QualityControl />;
       case 'deployment': return <DeploymentDashboard />;
       case 'marketing': return <MarketingDashboard />;
+      case 'admin_portal': return <AdminPortal />;
       default: return <LandingPage onGetStarted={() => navigateTo('login')} />;
     }
   };
@@ -140,7 +142,7 @@ const App: React.FC = () => {
         {renderModule()}
       </main>
 
-      {user && !['landing', 'login', 'session'].includes(currentView) && (
+      {user && !['landing', 'login', 'session', 'admin_portal'].includes(currentView) && (
         <BottomNav currentView={currentView} onNavigate={navigateTo} />
       )}
     </div>

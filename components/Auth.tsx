@@ -7,7 +7,8 @@ interface AuthProps {
 }
 
 const Auth: React.FC<AuthProps> = ({ onLogin }) => {
-  const mockUser: User = { id: '1', name: 'Dr. Selin Kaya', role: 'therapist' };
+  const mockTherapist: User = { id: '1', name: 'Dr. Selin Kaya', role: 'therapist', status: 'active' };
+  const mockAdmin: User = { id: 'admin-001', name: 'Sistem Yöneticisi', role: 'admin', status: 'active' };
 
   return (
     <div className="flex-1 flex items-center justify-center p-6 bg-slate-50">
@@ -20,33 +21,34 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
           <p className="text-slate-500 mt-2">TheraSpeech hesabınıza giriş yapın.</p>
         </div>
 
-        <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); onLogin(mockUser); }}>
-          <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">E-Posta</label>
-            <input 
-              type="email" 
-              className="w-full px-5 py-4 bg-background border-none rounded-2xl focus:ring-2 focus:ring-primary/50 transition-all outline-none text-sm"
-              placeholder="isim@klinik.com"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Şifre</label>
-            <input 
-              type="password" 
-              className="w-full px-5 py-4 bg-background border-none rounded-2xl focus:ring-2 focus:ring-primary/50 transition-all outline-none text-sm"
-              placeholder="••••••••"
-              required
-            />
-          </div>
+        <div className="space-y-4">
+          <button 
+            onClick={() => onLogin(mockTherapist)}
+            className="w-full py-5 bg-primary text-white font-extrabold rounded-2xl shadow-xl shadow-primary/20 hover:bg-primary-dark transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3"
+          >
+            <span className="material-symbols-outlined">psychology</span>
+            Terapist Girişi Yap
+          </button>
           
           <button 
-            type="submit"
-            className="w-full py-4 bg-primary text-white font-extrabold rounded-2xl shadow-xl shadow-primary/20 hover:bg-primary-dark transition-all hover:scale-[1.02] active:scale-95 mt-4"
+            onClick={() => onLogin(mockAdmin)}
+            className="w-full py-5 bg-slate-900 text-white font-extrabold rounded-2xl shadow-xl shadow-slate-900/10 hover:bg-black transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3"
           >
-            Giriş Yap
+            <span className="material-symbols-outlined">admin_panel_settings</span>
+            Admin Girişi Yap
           </button>
-        </form>
+        </div>
+
+        <div className="mt-10 flex flex-col gap-6">
+           <div className="relative h-px bg-slate-100 w-full flex items-center justify-center">
+              <span className="bg-white px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">veya</span>
+           </div>
+           
+           <div className="space-y-3">
+             <input className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none text-sm font-medium" placeholder="E-Posta" />
+             <input className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none text-sm font-medium" type="password" placeholder="Şifre" />
+           </div>
+        </div>
 
         <div className="mt-8 pt-8 border-t border-border flex items-center justify-center gap-2">
           <span className="text-sm text-slate-500">Hesabınız yok mu?</span>

@@ -7,15 +7,15 @@ class AIService {
   }
 
   /**
-   * Generates a new therapy material with metadata and an AI-generated image.
+   * Gemini 3 Flash ile hızlı materyal üretimi ve Gemini 2.5 Flash Image ile görselleştirme.
    */
   async generateMaterial(prompt: string) {
     const ai = this.getClient();
     
-    // Step 1: Generate Metadata
+    // 1. Metin ve Yapı Oluşturma
     const metaResponse = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
-      contents: `Create a professional speech therapy material. User request: "${prompt}". Focus on clinical accuracy and engagement.`,
+      contents: `Profesyonel bir dil konuşma terapisti materyali tasarla. Talep: "${prompt}". Klinik doğruluk ve çocuk dostu bir dil kullan.`,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -26,7 +26,7 @@ class AIService {
             duration: { type: Type.NUMBER },
             type: { type: Type.STRING },
             category: { type: Type.STRING },
-            imagePrompt: { type: Type.STRING, description: "A detailed descriptive prompt to generate an image for this material." }
+            imagePrompt: { type: Type.STRING, description: "Görsel üretim modeli için detaylı ingilizce betimleme." }
           },
           required: ["title", "description", "duration", "type", "category", "imagePrompt"]
         }
@@ -35,16 +35,14 @@ class AIService {
 
     const metadata = JSON.parse(metaResponse.text || '{}');
 
-    // Step 2: Generate Image
+    // 2. Görsel Üretimi (Gemini 2.5 Flash Image - Hızlı ve Etkili)
     try {
       const imgResponse = await ai.models.generateContent({
         model: 'gemini-2.5-flash-image',
         contents: {
-          parts: [{ text: `Clinical speech therapy material illustration for children: ${metadata.imagePrompt}. Soft colors, friendly, clean background.` }]
+          parts: [{ text: `High-quality clinical therapy material illustration: ${metadata.imagePrompt}. 3D render, soft clay style, white background, bright colors.` }]
         },
-        config: {
-          imageConfig: { aspectRatio: "1:1" }
-        }
+        config: { imageConfig: { aspectRatio: "1:1" } }
       });
 
       for (const part of imgResponse.candidates[0].content.parts) {
@@ -54,7 +52,6 @@ class AIService {
         }
       }
     } catch (e) {
-      console.warn("Image generation failed, falling back to placeholder", e);
       metadata.image = "https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&q=80&w=400";
     }
 
@@ -62,16 +59,14 @@ class AIService {
   }
 
   /**
-   * Complex clinical reasoning using Thinking Budget.
+   * Gemini 3 Flash + Thinking Budget ile Derin Klinik Analiz (Pro yerine Flash kullanılıyor)
    */
-  async analyzeClinicalCase(notes: string, context?: string) {
+  async analyzeClinicalCase(notes: string) {
     const ai = this.getClient();
     const response = await ai.models.generateContent({
-      model: 'gemini-3-pro-preview',
-      contents: `Perform a deep clinical analysis for a speech therapy session. 
-      Notes: "${notes}"
-      Context: "${context || 'No specific context provided'}"
-      Format as a professional clinical report using ICF standards.`,
+      model: 'gemini-3-flash-preview',
+      contents: `Aşağıdaki seans notlarını profesyonel bir DKT perspektifiyle analiz et: "${notes}". 
+      Raporu Markdown formatında hazırla. ICF kodlarını ve akademik referansları dahil et.`,
       config: {
         thinkingConfig: { thinkingBudget: 16000 }
       }
@@ -80,31 +75,26 @@ class AIService {
   }
 
   /**
-   * Academic search with grounding.
+   * Google Search Grounding ile Akademik Literatür Taraması
    */
   async academicSearch(query: string) {
     const ai = this.getClient();
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: `Find the most recent academic papers and clinical guidelines for: "${query}" in the field of speech-language pathology.`,
-      config: {
-        tools: [{ googleSearch: {} }],
-      },
+      contents: `"${query}" konusuyla ilgili en güncel klinik çalışmaları ve uygulama protokollerini bul.`,
+      config: { tools: [{ googleSearch: {} }] },
     });
     
-    const results = response.candidates?.[0]?.groundingMetadata?.groundingChunks?.map((chunk: any) => ({
-      title: chunk.web?.title || "Academic Source",
+    const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks?.map((chunk: any) => ({
+      title: chunk.web?.title || "Bilimsel Kaynak",
       uri: chunk.web?.uri
     })).filter((p: any) => p.uri) || [];
 
-    return {
-      text: response.text,
-      sources: results
-    };
+    return { text: response.text, sources };
   }
 
   /**
-   * Real-time session helper (Logic for Live API bridge)
+   * Live API Entegrasyonu (Native Audio Modeli)
    */
   connectLive(callbacks: any) {
     const ai = this.getClient();
@@ -116,7 +106,7 @@ class AIService {
         speechConfig: {
           voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } }
         },
-        systemInstruction: 'You are an expert Speech-Language Pathologist assistant. Monitor the user audio and provide brief, encouraging feedback and clinical observations in text or speech.'
+        systemInstruction: 'Sen uzman bir Dil ve Konuşma Terapisti asistanısın. Kullanıcı konuşmasını dinle, artikülasyon hatalarını tespit et ve anlık klinik geri bildirimler ver.'
       }
     });
   }
