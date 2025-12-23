@@ -11,11 +11,52 @@ export interface User {
   email?: string;
   status: 'active' | 'suspended' | 'pending';
   lastSeen?: string;
+  joinedAt?: string;
   subscription?: {
     plan: 'Free' | 'Basic' | 'Pro' | 'Clinic';
     status: 'active' | 'past_due' | 'canceled';
     nextBillingDate: string;
   };
+  stats?: {
+    totalSessions: number;
+    completionRate: number;
+    xp: number;
+  };
+}
+
+export interface ChatMessage {
+  id: string;
+  senderId: string;
+  senderName: string;
+  senderAvatar?: string;
+  content: string;
+  timestamp: string;
+  type: 'text' | 'file' | 'case' | 'material';
+  metadata?: any;
+}
+
+export interface ChatChannel {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  type: 'public' | 'private' | 'dm';
+  members: number;
+  lastMessage?: string;
+  category: 'clinical' | 'general' | 'case_study';
+}
+
+export interface Paper {
+  id: string;
+  title: string;
+  authors: string[];
+  year: string;
+  source: 'PubMed' | 'Google Scholar' | 'ResearchGate' | 'Cochrane';
+  uri: string;
+  abstract?: string;
+  clinicalImpact?: string;
+  tags: string[];
+  isSaved?: boolean;
 }
 
 export interface PlatformModule {
@@ -29,19 +70,6 @@ export interface PlatformModule {
   config: Record<string, any>;
 }
 
-export interface GlobalStats {
-  totalRevenue: number;
-  activeSessions: number;
-  apiUsage: number;
-  serverHealth: number;
-}
-
-export interface ActivitySettings {
-  targetSoundPosition: string;
-  difficulty: string;
-  notes: string;
-}
-
 export interface Activity {
   id: string;
   title: string;
@@ -50,9 +78,14 @@ export interface Activity {
   type: string;
   category: string;
   image: string;
-  settings?: ActivitySettings;
+  settings?: {
+    targetSoundPosition: string;
+    difficulty: string;
+    notes: string;
+  };
 }
 
+// Added Category interface to fix error in constants.tsx
 export interface Category {
   name: string;
   activities: Activity[];
@@ -66,13 +99,6 @@ export interface SessionMetadata {
   type: string;
   status: 'active' | 'completed' | 'scheduled';
   flow?: Activity[];
-}
-
-export interface LiveStats {
-  articulationScore: number;
-  fluencyScore: number;
-  engagementLevel: number;
-  detectedErrors: string[];
 }
 
 export interface Badge {
@@ -93,6 +119,13 @@ export interface Invoice {
 
 export interface ProgressMetric {
   date: string;
+  accuracy: number;
+  fluency: number;
+  engagement: number;
+}
+
+// Added LiveStats interface to fix error in SessionRoom.tsx
+export interface LiveStats {
   accuracy: number;
   fluency: number;
   engagement: number;
@@ -119,12 +152,4 @@ export interface Campaign {
   spend: string;
   conversions: number;
   status: 'active' | 'paused' | 'completed';
-}
-
-export interface ModuleDefinition {
-  id: AppView;
-  label: string;
-  icon: string;
-  roles: UserRole[];
-  category: 'core' | 'clinical' | 'growth' | 'admin';
 }

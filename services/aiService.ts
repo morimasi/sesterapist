@@ -6,16 +6,34 @@ class AIService {
     return new GoogleGenAI({ apiKey: process.env.API_KEY });
   }
 
-  /**
-   * Gemini 3 Flash ile hızlı materyal üretimi ve Gemini 2.5 Flash Image ile görselleştirme.
-   */
-  async generateMaterial(prompt: string) {
+  async summarizeDiscussion(messages: any[], config: any = {}) {
     const ai = this.getClient();
+    const discussionText = messages.map(m => `${m.senderName}: ${m.content}`).join('\n');
     
-    // 1. Metin ve Yapı Oluşturma
+    const response = await ai.models.generateContent({
+      model: config.model || 'gemini-3-flash-preview',
+      contents: `Aşağıdaki klinik tartışmayı analiz et ve şu başlıklarla özetle:
+      1. TARTIŞILAN TEMEL KONU
+      2. SUNULAN KLİNİK GÖRÜŞLER
+      3. VARILAN SONUÇ/ÖNERİLER
+      4. İLGİLİ AKADEMİK REFERANS ÖNERİLERİ
+      
+      Tartışma Notları:
+      ${discussionText}`,
+      config: {
+        thinkingConfig: { thinkingBudget: 4000 }
+      }
+    });
+
+    return response.text;
+  }
+
+  async generateMaterial(params: any, config: any = {}) {
+    const ai = this.getClient();
+    const structuredPrompt = `UZMAN TERAPİST MATERYALİ: ${JSON.stringify(params)}`;
     const metaResponse = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
-      contents: `Profesyonel bir dil konuşma terapisti materyali tasarla. Talep: "${prompt}". Klinik doğruluk ve çocuk dostu bir dil kullan.`,
+      model: config.model || 'gemini-3-flash-preview',
+      contents: structuredPrompt,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -26,87 +44,46 @@ class AIService {
             duration: { type: Type.NUMBER },
             type: { type: Type.STRING },
             category: { type: Type.STRING },
-            imagePrompt: { type: Type.STRING, description: "Görsel üretim modeli için detaylı ingilizce betimleme." }
+            imagePrompt: { type: Type.STRING }
           },
           required: ["title", "description", "duration", "type", "category", "imagePrompt"]
         }
       }
     });
-
-    const metadata = JSON.parse(metaResponse.text || '{}');
-
-    // 2. Görsel Üretimi (Gemini 2.5 Flash Image - Hızlı ve Etkili)
-    try {
-      const imgResponse = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
-        contents: {
-          parts: [{ text: `High-quality clinical therapy material illustration: ${metadata.imagePrompt}. 3D render, soft clay style, white background, bright colors.` }]
-        },
-        config: { imageConfig: { aspectRatio: "1:1" } }
-      });
-
-      for (const part of imgResponse.candidates[0].content.parts) {
-        if (part.inlineData) {
-          metadata.image = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
-          break;
-        }
-      }
-    } catch (e) {
-      metadata.image = "https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&q=80&w=400";
-    }
-
-    return metadata;
+    return JSON.parse(metaResponse.text || '{}');
   }
 
-  /**
-   * Gemini 3 Flash + Thinking Budget ile Derin Klinik Analiz (Pro yerine Flash kullanılıyor)
-   */
-  async analyzeClinicalCase(notes: string) {
+  async analyzeClinicalCase(notes: string, config: any = {}) {
     const ai = this.getClient();
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
-      contents: `Aşağıdaki seans notlarını profesyonel bir DKT perspektifiyle analiz et: "${notes}". 
-      Raporu Markdown formatında hazırla. ICF kodlarını ve akademik referansları dahil et.`,
-      config: {
-        thinkingConfig: { thinkingBudget: 16000 }
-      }
+      model: 'gemini-3-pro-preview',
+      contents: notes,
+      config: { thinkingConfig: { thinkingBudget: 32000 } }
     });
     return response.text;
   }
 
-  /**
-   * Google Search Grounding ile Akademik Literatür Taraması
-   */
-  async academicSearch(query: string) {
+  async academicSearch(query: string, config: any = {}) {
     const ai = this.getClient();
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: `"${query}" konusuyla ilgili en güncel klinik çalışmaları ve uygulama protokollerini bul.`,
+      model: "gemini-3-pro-preview",
+      contents: query,
       config: { tools: [{ googleSearch: {} }] },
     });
-    
-    const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks?.map((chunk: any) => ({
-      title: chunk.web?.title || "Bilimsel Kaynak",
-      uri: chunk.web?.uri
-    })).filter((p: any) => p.uri) || [];
-
+    const sources = (response.candidates?.[0]?.groundingMetadata?.groundingChunks || []).map((chunk: any, idx: number) => ({
+      id: `p-${idx}`, title: chunk.web?.title, uri: chunk.web?.uri
+    }));
     return { text: response.text, sources };
   }
 
-  /**
-   * Live API Entegrasyonu (Native Audio Modeli)
-   */
-  connectLive(callbacks: any) {
+  connectLive(callbacks: any, config: any = {}) {
     const ai = this.getClient();
     return ai.live.connect({
       model: 'gemini-2.5-flash-native-audio-preview-09-2025',
       callbacks,
       config: {
         responseModalities: [Modality.AUDIO],
-        speechConfig: {
-          voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } }
-        },
-        systemInstruction: 'Sen uzman bir Dil ve Konuşma Terapisti asistanısın. Kullanıcı konuşmasını dinle, artikülasyon hatalarını tespit et ve anlık klinik geri bildirimler ver.'
+        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } } }
       }
     });
   }
