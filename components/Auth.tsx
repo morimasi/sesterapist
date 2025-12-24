@@ -18,7 +18,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
   
   const mockAdmin: User = { 
     id: 'u3', 
-    name: 'Sistem Admin', 
+    name: 'SYSTEM_ROOT', 
     role: 'admin', 
     status: 'active',
     avatar: 'https://i.pravatar.cc/150?u=u3',
@@ -48,65 +48,57 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center p-6 bg-slate-50">
-      <div className="w-full max-w-md bg-surface rounded-[32px] shadow-2xl shadow-primary/10 p-10 border border-border">
-        <div className="text-center mb-8">
-          <div className="size-16 bg-primary text-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-primary/30">
-            <span className="material-symbols-outlined text-4xl font-bold">graphic_eq</span>
+    <div className="flex-1 flex items-center justify-center p-8 bg-slate-50 dark:bg-slate-950 relative overflow-hidden">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 size-[600px] bg-primary/10 rounded-full blur-[120px] -z-0"></div>
+      
+      <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-[64px] shadow-[0_50px_100px_rgba(0,0,0,0.1)] dark:shadow-none p-12 md:p-16 border border-slate-100 dark:border-white/5 relative z-10 animate-in zoom-in duration-700">
+        <div className="text-center mb-12">
+          <div className="size-20 bg-primary text-white rounded-[32px] flex items-center justify-center mx-auto mb-8 shadow-3xl shadow-primary/30 rotate-12">
+            <span className="material-symbols-outlined text-4xl font-black">graphic_eq</span>
           </div>
-          <h2 className="text-2xl font-black text-slate-900 italic tracking-tighter">Tekrar Hoş Geldiniz</h2>
-          <p className="text-slate-500 mt-2 font-medium">TheraSpeech simülasyonu için bir rol seçin.</p>
+          <h2 className="text-4xl font-black text-slate-900 dark:text-white italic tracking-tighter uppercase leading-none mb-3">Tekrar Hoş Geldiniz</h2>
+          <p className="text-slate-500 dark:text-slate-400 font-medium italic">Simülasyon protokolü için bir erişim seviyesi seçin.</p>
         </div>
 
-        <div className="space-y-3">
-          <button 
-            onClick={() => onLogin(mockTherapist)}
-            className="w-full py-4.5 bg-primary text-white font-extrabold rounded-2xl shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 uppercase text-xs tracking-widest"
-          >
-            <span className="material-symbols-outlined font-black">psychology</span>
-            Terapist Girişi Yap
-          </button>
-
-          <button 
-            onClick={() => onLogin(mockClient)}
-            className="w-full py-4.5 bg-emerald-500 text-white font-extrabold rounded-2xl shadow-lg shadow-emerald-500/20 hover:bg-emerald-600 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 uppercase text-xs tracking-widest"
-          >
-            <span className="material-symbols-outlined font-black">person_outline</span>
-            Vaka Sahibi Girişi Yap
-          </button>
-          
-          <button 
-            onClick={() => onLogin(mockAdmin)}
-            className="w-full py-4.5 bg-slate-900 text-white font-extrabold rounded-2xl shadow-lg shadow-slate-900/10 hover:bg-black transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 uppercase text-xs tracking-widest"
-          >
-            <span className="material-symbols-outlined font-black">admin_panel_settings</span>
-            Admin Girişi Yap
-          </button>
+        <div className="space-y-4">
+          <AuthBtn onClick={() => onLogin(mockTherapist)} label="Terapist_Girisi" icon="psychology" color="bg-primary" />
+          <AuthBtn onClick={() => onLogin(mockClient)} label="Vaka_Sahibi_Girisi" icon="person_outline" color="bg-emerald-500" />
+          <AuthBtn onClick={() => onLogin(mockAdmin)} label="Sistem_Admin_Girisi" icon="terminal" color="bg-slate-900 dark:bg-white dark:text-slate-950" />
         </div>
 
-        <div className="mt-8 flex flex-col gap-6">
-           <div className="relative h-px bg-slate-100 w-full flex items-center justify-center">
-              <span className="bg-white px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">veya manuel giriş</span>
+        <div className="mt-12 flex flex-col gap-8">
+           <div className="relative h-px bg-slate-100 dark:bg-white/10 w-full flex items-center justify-center">
+              <span className="bg-white dark:bg-slate-900 px-6 text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-[0.4em]">veya manuel kimlik</span>
            </div>
            
-           <div className="space-y-3">
-             <input className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none text-sm font-medium focus:border-primary transition-colors" placeholder="E-Posta Adresi" />
-             <input className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none text-sm font-medium focus:border-primary transition-colors" type="password" placeholder="Şifre" />
+           <div className="space-y-4">
+             <input className="w-full px-8 py-5 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-3xl outline-none text-sm font-bold focus:border-primary dark:focus:border-primary transition-all shadow-inner placeholder:text-slate-300 dark:placeholder:text-slate-700" placeholder="Kullanıcı Adı / E-Posta" />
+             <input className="w-full px-8 py-5 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-3xl outline-none text-sm font-bold focus:border-primary dark:focus:border-primary transition-all shadow-inner placeholder:text-slate-300 dark:placeholder:text-slate-700" type="password" placeholder="Erişim Şifresi" />
            </div>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-border flex flex-col items-center gap-4">
-          <button className="w-full py-4 bg-slate-100 text-slate-600 font-black rounded-2xl text-sm hover:bg-slate-200 transition-all active:scale-95 uppercase tracking-widest">
-             Giriş Yap
+        <div className="mt-12 pt-10 border-t border-slate-100 dark:border-white/5 flex flex-col items-center gap-6">
+          <button className="w-full py-5 bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-black rounded-3xl text-xs uppercase tracking-[0.3em] hover:bg-primary hover:text-white transition-all active:scale-95">
+             Erişimi Doğrula
           </button>
-          <div className="flex items-center justify-center gap-2">
-            <span className="text-sm text-slate-500">Hesabınız yok mu?</span>
-            <button className="text-sm font-extrabold text-primary hover:underline">Kaydolun</button>
+          <div className="flex items-center justify-center gap-3">
+            <span className="text-xs text-slate-400 font-medium italic">Hesabınız yok mu?</span>
+            <button className="text-xs font-black text-primary hover:underline uppercase tracking-widest">Kayıt Ol</button>
           </div>
         </div>
       </div>
     </div>
   );
 };
+
+const AuthBtn: React.FC<{ onClick: () => void, label: string, icon: string, color: string }> = ({ onClick, label, icon, color }) => (
+  <button 
+    onClick={onClick}
+    className={`w-full py-5 ${color} text-white font-black rounded-3xl shadow-2xl transition-all hover:scale-[1.05] active:scale-95 flex items-center justify-center gap-4 uppercase text-[11px] tracking-[0.2em]`}
+  >
+    <span className="material-symbols-outlined font-black">{icon}</span>
+    {label}
+  </button>
+);
 
 export default Auth;

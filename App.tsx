@@ -40,34 +40,26 @@ const DEFAULT_MODULES: PlatformModule[] = [
   { id: 'offline', name: 'Uzaktan Operasyon', icon: 'cloud_off', enabled: true, minRole: 'therapist', category: 'clinical', description: 'İnternetsiz ortamda seans yönetimi ve senkronizasyon.', config: {} },
   { id: 'session', name: 'Canlı Oda', icon: 'videocam', enabled: true, minRole: 'therapist', category: 'clinical', description: 'Görüntülü seans ve eş zamanlı AI analizi.', config: { samplingRate: 16000, voice: 'Kore' } },
   { id: 'admin_portal', name: 'Sistem Matrisi', icon: 'admin_panel_settings', enabled: true, minRole: 'admin', category: 'admin', description: 'Platform genel yönetimi ve yetkilendirme.', config: { logsRetentionDays: 30 } },
-  { id: 'marketing', name: 'Büyüme Zekası', icon: 'rocket_launch', enabled: true, minRole: 'admin', category: 'growth', description: 'Pazarlama metrikleri ve lansman stratejisi.', config: { campaignTracking: true } },
-  { id: 'deployment', name: 'Altyapı Konsolu', icon: 'cloud', enabled: true, minRole: 'admin', category: 'admin', description: 'Bulut altyapı ve global düğüm izleme.', config: { region: 'eu-central' } },
-  { id: 'qa', name: 'Sistem Sağlığı', icon: 'health_and_safety', enabled: true, minRole: 'admin', category: 'admin', description: 'Tanılama ve hata günlükleri.', config: {} },
 ];
 
 const INITIAL_MOCK_USERS: User[] = [
   { 
     id: 'u1', name: 'Dr. Selin Kaya', role: 'therapist', email: 'selin@theraspeech.ai', status: 'active', 
-    // Fix: Added remainingSessions to subscription and level to stats
     subscription: { plan: 'Clinic', status: 'active', nextBillingDate: '2024-12-01', remainingSessions: 99 },
     stats: { totalSessions: 124, completionRate: 98, xp: 12400, level: 25 }
   },
   { 
     id: 'u2', name: 'Ahmet Yılmaz', role: 'client', email: 'ahmet@gmail.com', status: 'active',
-    // Fix: Added remainingSessions to subscription and level to stats
     subscription: { plan: 'Pro', status: 'active', nextBillingDate: '2024-11-15', remainingSessions: 6 },
     stats: { totalSessions: 24, completionRate: 85, xp: 4500, level: 14 }
-  },
-  { 
-    id: 'u3', name: 'Sistem Admin', role: 'admin', email: 'admin@theraspeech.ai', status: 'active',
-    // Fix: Added remainingSessions to subscription and level to stats
-    subscription: { plan: 'Clinic', status: 'active', nextBillingDate: '2099-01-01', remainingSessions: 999 },
-    stats: { totalSessions: 0, completionRate: 100, xp: 0, level: 99 }
-  },
+  }
 ];
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<AppView>('landing');
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    return (localStorage.getItem('theraspeech_theme') as 'light' | 'dark') || 'light';
+  });
   const [user, setUser] = useState<User | null>(() => {
     const saved = localStorage.getItem('theraspeech_user');
     return saved ? JSON.parse(saved) : null;
@@ -97,11 +89,18 @@ const App: React.FC = () => {
   });
 
   useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    localStorage.setItem('theraspeech_theme', theme);
+  }, [theme]);
+
+  useEffect(() => {
     if (user) localStorage.setItem('theraspeech_user', JSON.stringify(user));
     localStorage.setItem('theraspeech_flow', JSON.stringify(sessionFlow));
     localStorage.setItem('theraspeech_modules', JSON.stringify(modules));
     localStorage.setItem('theraspeech_all_users', JSON.stringify(users));
   }, [user, sessionFlow, modules, users]);
+
+  const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
 
   const navigateTo = (view: AppView) => {
     const targetMod = modules.find(m => m.id === view);
@@ -109,18 +108,16 @@ const App: React.FC = () => {
       alert("Bu modül şu an sistem yöneticisi tarafından bakıma alınmıştır.");
       return;
     }
-
     if (view === 'session' && !activeSession) {
       handleStartSession({
         id: `quick-${Date.now()}`,
-        clientName: 'Bekleniyor...',
+        clientName: 'Hızlı Katılım',
         startTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         type: 'Hızlı Başlatma',
         status: 'active'
       });
       return;
     }
-
     setCurrentView(view);
   };
 
@@ -129,9 +126,8 @@ const App: React.FC = () => {
     setCurrentView('session');
   };
 
-  const getModuleConfig = (id: AppView) => modules.find(m => m.id === id)?.config || {};
-
   const renderModule = () => {
+    const config = modules.find(m => m.id === currentView)?.config || {};
     switch (currentView) {
       case 'landing': return <LandingPage onGetStarted={() => navigateTo('login')} />;
       case 'login': return <Auth onLogin={(u) => { setUser(u); navigateTo('dashboard'); }} />;
@@ -159,32 +155,28 @@ const App: React.FC = () => {
       );
       case 'session': return <SessionRoom session={activeSession} onEndSession={() => { setActiveSession(null); navigateTo('feedback'); }} />;
       case 'progress': return <ProgressReports />;
-      case 'library': return <MaterialLibrary config={getModuleConfig('library')} onAdd={(a) => {
+      case 'library': return <MaterialLibrary onAdd={(a) => {
           const newActivity = { ...a, id: `session-${Date.now()}` };
           setSessionFlow(prev => [...prev, newActivity]);
           setSelectedActivityId(newActivity.id);
           navigateTo('builder');
       }} />;
-      case 'gamification': return <Gamification config={getModuleConfig('gamification')} />;
+      case 'gamification': return <Gamification />;
       case 'booking': return <Booking onComplete={() => navigateTo('dashboard')} />;
       case 'settings': return <Settings user={user} config={accessibility} onUpdateConfig={setAccessibility} />;
-      case 'academic': return <AcademicLibrary config={getModuleConfig('academic')} />;
-      case 'community': return <Community config={getModuleConfig('community')} />;
+      case 'academic': return <AcademicLibrary />;
+      case 'community': return <Community />;
       case 'offline': return <OfflineModule />;
       case 'feedback': return <FeedbackSystem onComplete={() => navigateTo('dashboard')} />;
-      case 'assessment': return <AIAssessment config={getModuleConfig('assessment')} />;
-      case 'help': return <HelpCenter />;
-      case 'qa': return <QualityControl />;
-      case 'deployment': return <DeploymentDashboard />;
-      case 'marketing': return <MarketingDashboard />;
+      case 'assessment': return <AIAssessment config={config} />;
       case 'admin_portal': return <AdminPortal modules={modules} onUpdateModules={setModules} users={users} onUpdateUsers={setUsers} />;
       default: return <LandingPage onGetStarted={() => navigateTo('login')} />;
     }
   };
 
   return (
-    <div className={`flex flex-col h-screen transition-all duration-300 bg-background ${accessibility.highContrast ? 'contrast-125 saturate-150' : ''}`}>
-      <Header currentView={currentView} user={user} onNavigate={navigateTo} modules={modules} />
+    <div className={`flex flex-col h-screen transition-all duration-300 bg-background dark:bg-slate-950 text-slate-900 dark:text-slate-100 ${accessibility.highContrast ? 'contrast-125 saturate-150' : ''}`}>
+      <Header currentView={currentView} user={user} theme={theme} toggleTheme={toggleTheme} onNavigate={navigateTo} modules={modules} />
       <main className="flex-1 flex flex-col overflow-hidden relative">{renderModule()}</main>
       {user && !['landing', 'login', 'session', 'admin_portal'].includes(currentView) && <BottomNav currentView={currentView} onNavigate={navigateTo} />}
     </div>
