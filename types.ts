@@ -1,5 +1,5 @@
 
-export type AppView = 'landing' | 'login' | 'dashboard' | 'builder' | 'session' | 'progress' | 'library' | 'gamification' | 'booking' | 'settings' | 'academic' | 'community' | 'offline' | 'feedback' | 'assessment' | 'help' | 'qa' | 'deployment' | 'marketing' | 'admin_portal';
+export type AppView = 'landing' | 'login' | 'dashboard' | 'builder' | 'session' | 'progress' | 'library' | 'gamification' | 'booking' | 'settings' | 'academic' | 'community' | 'offline' | 'feedback' | 'assessment' | 'help' | 'qa' | 'deployment' | 'marketing' | 'admin_portal' | 'client_hub';
 
 export type UserRole = 'therapist' | 'client' | 'admin';
 
@@ -12,16 +12,31 @@ export interface User {
   status: 'active' | 'suspended' | 'pending';
   lastSeen?: string;
   joinedAt?: string;
+  bio?: string;
+  interests?: string[];
+  guardianName?: string;
+  streak?: number;
   subscription?: {
     plan: 'Free' | 'Basic' | 'Pro' | 'Clinic';
     status: 'active' | 'past_due' | 'canceled';
     nextBillingDate: string;
+    remainingSessions: number;
   };
   stats?: {
     totalSessions: number;
     completionRate: number;
     xp: number;
+    level: number;
   };
+}
+
+export interface Homework {
+  id: string;
+  title: string;
+  dueDate: string;
+  status: 'pending' | 'completed';
+  activityId: string;
+  points: number;
 }
 
 export interface ChatMessage {
@@ -85,7 +100,6 @@ export interface Activity {
   };
 }
 
-// Added Category interface to fix error in constants.tsx
 export interface Category {
   name: string;
   activities: Activity[];
@@ -124,7 +138,6 @@ export interface ProgressMetric {
   engagement: number;
 }
 
-// Added LiveStats interface to fix error in SessionRoom.tsx
 export interface LiveStats {
   accuracy: number;
   fluency: number;

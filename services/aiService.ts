@@ -30,10 +30,10 @@ class AIService {
     `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-3-pro-preview',
+      model: 'gemini-3-flash-preview',
       contents: prompt,
       config: {
-        thinkingConfig: { thinkingBudget: config.thinkingBudget || 16000 }
+        thinkingConfig: { thinkingBudget: config.thinkingBudget || 0 }
       }
     });
 
@@ -44,9 +44,9 @@ class AIService {
     const ai = this.getClient();
     const discussionText = messages.map(m => `${m.senderName}: ${m.content}`).join('\n');
     const response = await ai.models.generateContent({
-      model: config.model || 'gemini-3-flash-preview',
+      model: 'gemini-3-flash-preview',
       contents: `Aşağıdaki klinik tartışmayı analiz et ve özetle:\n${discussionText}`,
-      config: { thinkingConfig: { thinkingBudget: 4000 } }
+      config: { thinkingConfig: { thinkingBudget: 0 } }
     });
     return response.text;
   }
@@ -55,7 +55,7 @@ class AIService {
     const ai = this.getClient();
     const structuredPrompt = `UZMAN TERAPİST MATERYALİ: ${JSON.stringify(params)}`;
     const metaResponse = await ai.models.generateContent({
-      model: config.model || 'gemini-3-flash-preview',
+      model: 'gemini-3-flash-preview',
       contents: structuredPrompt,
       config: {
         responseMimeType: "application/json",
@@ -81,9 +81,9 @@ class AIService {
   async analyzeClinicalCase(notes: string, config: any = {}) {
     const ai = this.getClient();
     const response = await ai.models.generateContent({
-      model: 'gemini-3-pro-preview',
+      model: 'gemini-3-flash-preview',
       contents: notes,
-      config: { thinkingConfig: { thinkingBudget: 32000 } }
+      config: { thinkingConfig: { thinkingBudget: config.thinkingBudget || 0 } }
     });
     return response.text;
   }
@@ -91,7 +91,7 @@ class AIService {
   async academicSearch(query: string, config: any = {}) {
     const ai = this.getClient();
     const response = await ai.models.generateContent({
-      model: "gemini-3-pro-preview",
+      model: "gemini-3-flash-preview",
       contents: query,
       config: { tools: [{ googleSearch: {} }] },
     });

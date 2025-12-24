@@ -36,8 +36,8 @@ const AIAssessment: React.FC<{ config?: Record<string, any> }> = ({ config }) =>
     try {
       const result = await aiService.analyzeClinicalCase(combinedNotes, {
         ...config,
-        model: 'gemini-3-pro-preview', 
-        thinkingBudget: 32000 
+        model: 'gemini-3-flash-preview', 
+        thinkingBudget: 0 
       });
       setReport(result || "Analiz hatası.");
     } catch (err) {
@@ -58,7 +58,7 @@ const AIAssessment: React.FC<{ config?: Record<string, any> }> = ({ config }) =>
             <div>
                <h2 className="text-2xl font-black text-slate-900 italic tracking-tighter uppercase leading-none">Klinik Analiz Merkezi</h2>
                <div className="flex items-center gap-3 mt-1">
-                  <span className="text-[10px] font-black text-primary uppercase tracking-widest bg-primary/5 px-2 py-0.5 rounded border border-primary/10">Engine: Gemini 3 Pro</span>
+                  <span className="text-[10px] font-black text-primary uppercase tracking-widest bg-primary/5 px-2 py-0.5 rounded border border-primary/10">Engine: Gemini 3 Flash</span>
                   <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Protocol: ICF Standard 2024</span>
                </div>
             </div>
@@ -146,7 +146,7 @@ const AIAssessment: React.FC<{ config?: Record<string, any> }> = ({ config }) =>
                      </div>
                      <div>
                         <h3 className="text-xl font-black text-slate-900 italic uppercase mb-2 tracking-tighter">Muhakeme Modu Aktif</h3>
-                        <p className="text-sm text-slate-500 font-medium">Gemini 3 Pro klinik verileri ICF standartlarına göre sentezliyor ve seans önerileri hazırlıyor.</p>
+                        <p className="text-sm text-slate-500 font-medium">Gemini 3 Flash klinik verileri ICF standartlarına göre sentezliyor ve seans önerileri hazırlıyor.</p>
                      </div>
                   </div>
                </div>

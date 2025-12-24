@@ -13,161 +13,284 @@ interface SettingsProps {
 }
 
 const MOCK_INVOICES: Invoice[] = [
-  { id: 'INV-001', date: '01 Mart 2024', amount: '1,600 ₺', status: 'Paid', service: 'Gelişim Paketi' },
-  { id: 'INV-002', date: '01 Şubat 2024', amount: '1,600 ₺', status: 'Paid', service: 'Gelişim Paketi' },
-  { id: 'INV-003', date: '01 Ocak 2024', amount: '1,600 ₺', status: 'Paid', service: 'Gelişim Paketi' },
+  { id: 'INV-001', date: '01 Mart 2024', amount: '1,600 ₺', status: 'Paid', service: 'Pro Klinik Paketi' },
+  { id: 'INV-002', date: '01 Şubat 2024', amount: '1,600 ₺', status: 'Paid', service: 'Pro Klinik Paketi' },
+  { id: 'INV-003', date: '01 Ocak 2024', amount: '1,600 ₺', status: 'Paid', service: 'Pro Klinik Paketi' },
 ];
 
+type SettingsTab = 'profile' | 'clinical' | 'notifications' | 'security' | 'billing' | 'accessibility';
+
 const Settings: React.FC<SettingsProps> = ({ user, config, onUpdateConfig }) => {
-  const [activeTab, setActiveTab] = useState<'profile' | 'billing' | 'accessibility'>('profile');
+  const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
+  const isClient = user?.role === 'client';
 
   return (
-    <div className="flex-1 overflow-y-auto bg-slate-50 p-4 md:p-8">
-      <div className="max-w-5xl mx-auto space-y-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-1">
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight">Ayarlar</h2>
-            <p className="text-slate-500">Hesabınızı ve ödeme tercihlerinizi buradan yönetin.</p>
+    <div className="flex-1 overflow-y-auto bg-[#F8FAFC] p-6 md:p-10 no-scrollbar">
+      <div className="max-w-7xl mx-auto space-y-12">
+        
+        {/* Header: Dynamic Navigation */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+          <div className="space-y-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-900/5 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-500 border border-slate-900/5">
+               <span className="material-symbols-outlined text-[14px]">settings_accessibility</span>
+               Kullanıcı Kontrol Merkezi v7.0
+            </div>
+            <h2 className="text-5xl font-black text-slate-900 tracking-tighter italic uppercase leading-none">
+              {isClient ? 'Vaka_Profili' : 'Hesap_Yonetimi'}
+            </h2>
+            <p className="text-lg text-slate-500 font-medium tracking-tight italic">Platform deneyiminizi kişiselleştirin.</p>
           </div>
-          <div className="flex bg-white p-1 rounded-2xl border border-border shadow-sm overflow-x-auto whitespace-nowrap scrollbar-hide">
-            <button onClick={() => setActiveTab('profile')} className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all ${activeTab === 'profile' ? 'bg-primary text-white shadow-lg' : 'text-slate-500'}`}>Profil</button>
-            <button onClick={() => setActiveTab('billing')} className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all ${activeTab === 'billing' ? 'bg-primary text-white shadow-lg' : 'text-slate-500'}`}>Fatura & Abonelik</button>
-            <button onClick={() => setActiveTab('accessibility')} className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all ${activeTab === 'accessibility' ? 'bg-primary text-white shadow-lg' : 'text-slate-500'}`}>Erişilebilirlik</button>
+          
+          <div className="flex bg-white p-1.5 rounded-[24px] border border-slate-200 shadow-sm overflow-x-auto no-scrollbar max-w-full">
+            <TabBtn active={activeTab === 'profile'} label="Kimlik" onClick={() => setActiveTab('profile')} />
+            {isClient && <TabBtn active={activeTab === 'clinical'} label="Klinik Bilgi" onClick={() => setActiveTab('clinical')} />}
+            <TabBtn active={activeTab === 'notifications'} label="Bildirimler" onClick={() => setActiveTab('notifications')} />
+            <TabBtn active={activeTab === 'security'} label="Güvenlik" onClick={() => setActiveTab('security')} />
+            <TabBtn active={activeTab === 'billing'} label="Ödemeler" onClick={() => setActiveTab('billing')} />
+            <TabBtn active={activeTab === 'accessibility'} label="Erişim" onClick={() => setActiveTab('accessibility')} />
           </div>
         </div>
 
-        {activeTab === 'profile' && (
-          <section className="bg-white rounded-[32px] border border-border p-8 shadow-sm space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-             <div className="flex items-center gap-6">
-                <div className="relative group">
-                   <div className="size-24 rounded-3xl bg-slate-100 overflow-hidden border-4 border-white shadow-xl">
-                      <img src={user?.avatar || `https://i.pravatar.cc/150?u=${user?.id}`} className="w-full h-full object-cover" alt="Profile" />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          
+          <div className="lg:col-span-8 space-y-8">
+            
+            {activeTab === 'profile' && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <section className="bg-white rounded-[56px] border border-slate-200 p-10 md:p-12 shadow-sm">
+                   <div className="flex flex-col md:flex-row items-center gap-10 mb-12">
+                      <div className="relative group">
+                         <div className="size-32 rounded-[48px] bg-slate-100 overflow-hidden border-4 border-white shadow-2xl transition-transform group-hover:scale-105 duration-500">
+                            <img src={user?.avatar || `https://i.pravatar.cc/150?u=${user?.id}`} className="w-full h-full object-cover" alt="Profile" />
+                         </div>
+                         <button className="absolute -bottom-3 -right-3 size-12 bg-primary text-white rounded-2xl shadow-xl flex items-center justify-center hover:bg-slate-900 transition-all border-4 border-white">
+                            <span className="material-symbols-outlined text-[24px]">add_a_photo</span>
+                         </button>
+                      </div>
+                      <div className="text-center md:text-left flex-1">
+                         <h3 className="text-3xl font-black text-slate-900 italic tracking-tight uppercase leading-none">{user?.name}</h3>
+                         <p className="text-slate-400 font-bold uppercase tracking-widest text-xs mt-2">
+                           ID: #{user?.id} • ÜYELİK: 2024
+                         </p>
+                         <div className="flex flex-wrap justify-center md:justify-start gap-2 mt-4">
+                            <span className={`px-4 py-1.5 text-[10px] font-black uppercase rounded-xl border ${isClient ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-primary/10 text-primary border-primary/10'}`}>
+                               {isClient ? 'VAKA SAHİBİ' : 'UZMAN TERAPİST'}
+                            </span>
+                            <span className="px-4 py-1.5 bg-amber-50 text-amber-600 text-[10px] font-black uppercase rounded-xl border border-amber-100">DOĞRULANMIŞ HESAP</span>
+                         </div>
+                      </div>
                    </div>
-                   <button className="absolute -bottom-2 -right-2 size-10 bg-primary text-white rounded-xl shadow-lg flex items-center justify-center hover:scale-110 transition-transform">
-                      <span className="material-symbols-outlined text-[20px]">photo_camera</span>
+
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-10 border-t border-slate-100">
+                      <Field label="Görünen İsim" value={user?.name} />
+                      <Field label="E-Posta Adresi" value={user?.email} />
+                      {isClient && (
+                        <>
+                           <Field label="Veli / Vasi Adı" value="Mehmet Yılmaz" />
+                           <Field label="Telefon Numarası" value="+90 532 000 00 00" />
+                        </>
+                      )}
+                   </div>
+                </section>
+              </div>
+            )}
+
+            {activeTab === 'clinical' && isClient && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <section className="bg-white rounded-[56px] border border-slate-200 p-10 shadow-sm space-y-10">
+                   <div className="flex items-center gap-4 mb-2">
+                      <div className="size-12 bg-emerald-500/10 text-emerald-600 rounded-2xl flex items-center justify-center">
+                         <span className="material-symbols-outlined font-black">clinical_notes</span>
+                      </div>
+                      <h3 className="text-xl font-black text-slate-900 uppercase italic tracking-tight">Klinik Tanı ve Bilgiler</h3>
+                   </div>
+                   
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <Field label="Ana Tanı" value="Artikülasyon Bozukluğu" />
+                      <Field label="Hedeflenen Sesler" value="R, S, Tr" />
+                      <div className="md:col-span-2 space-y-3">
+                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Klinik İlgi Alanları (AI İçerik İçin)</label>
+                         <div className="flex flex-wrap gap-2">
+                            {['Uzay', 'Hayvanlar', 'Robotlar', 'Araba Yarışı'].map(interest => (
+                              <div key={interest} className="px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-600 flex items-center gap-2">
+                                 {interest} <span className="material-symbols-outlined text-xs cursor-pointer hover:text-rose-500">close</span>
+                              </div>
+                            ))}
+                            <button className="px-4 py-2 border-2 border-dashed border-slate-200 rounded-xl text-xs font-bold text-slate-400 hover:border-primary hover:text-primary transition-all">+ Ekle</button>
+                         </div>
+                      </div>
+                   </div>
+                </section>
+
+                <section className="bg-amber-50 rounded-[40px] border border-amber-100 p-8 flex gap-6">
+                   <span className="material-symbols-outlined text-amber-500 text-3xl">info</span>
+                   <p className="text-sm text-amber-900 font-medium leading-relaxed italic">
+                      Bu bölümdeki bilgiler terapistiniz tarafından seanslarınızın verimliliğini artırmak için kullanılır. AI modellerimiz, materyal üretirken burada belirttiğiniz ilgi alanlarını temel alır.
+                   </p>
+                </section>
+              </div>
+            )}
+
+            {activeTab === 'billing' && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                 <div className="bg-slate-900 rounded-[56px] p-12 text-white relative overflow-hidden shadow-3xl group">
+                    <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:rotate-12 transition-transform duration-1000">
+                       <span className="material-symbols-outlined text-[320px]">credit_card</span>
+                    </div>
+                    <div className="relative z-10 space-y-10">
+                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                          <div>
+                             <span className="px-4 py-1.5 bg-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest rounded-full border border-emerald-500/20 mb-6 inline-block">AKTİF ABONELİK</span>
+                             <h3 className="text-4xl font-black italic tracking-tighter uppercase mb-2">{user?.subscription?.plan} Paket</h3>
+                             <p className="text-slate-400 font-medium italic">Bir sonraki yenileme: <span className="text-white">{user?.subscription?.nextBillingDate}</span></p>
+                          </div>
+                          <div className="flex gap-4">
+                             <button className="px-8 py-4 bg-emerald-500 text-white font-black text-[10px] uppercase rounded-2xl shadow-xl shadow-emerald-500/30 hover:bg-emerald-600 transition-all active:scale-95">Seans Yükle</button>
+                             <button className="px-8 py-4 bg-white/5 text-white font-black text-[10px] uppercase rounded-2xl border border-white/10 hover:bg-white/10 transition-all active:scale-95">Planı Yönet</button>
+                          </div>
+                       </div>
+                       
+                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                          <BillingStat label="Kalan Seans Hakkı" value={`${user?.subscription?.remainingSessions || 4} SEANS`} />
+                          <BillingStat label="Ödev Tamamlama" value="12 / 15" />
+                          <BillingStat label="AI Materyal Kullanımı" value="42 / ∞" />
+                       </div>
+                    </div>
+                 </div>
+
+                 <section className="bg-white rounded-[56px] border border-slate-200 overflow-hidden shadow-sm">
+                    <div className="p-10 border-b border-slate-100 flex items-center justify-between">
+                       <h3 className="text-xl font-black text-slate-900 italic tracking-tight uppercase">İşlem ve Ödeme Kayıtları</h3>
+                    </div>
+                    <div className="overflow-x-auto">
+                       <table className="w-full text-left">
+                          <thead>
+                             <tr className="bg-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <th className="px-10 py-6">ID</th>
+                                <th className="px-10 py-6">TARİH</th>
+                                <th className="px-10 py-6">HİZMET</th>
+                                <th className="px-10 py-6 text-right">TUTAR</th>
+                             </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-50">
+                             {MOCK_INVOICES.map(inv => (
+                               <tr key={inv.id} className="group hover:bg-slate-50/50 transition-colors">
+                                  <td className="px-10 py-6 text-sm font-black text-slate-900 italic">{inv.id}</td>
+                                  <td className="px-10 py-6 text-sm text-slate-500 font-medium">{inv.date}</td>
+                                  <td className="px-10 py-6 text-sm text-slate-700 font-bold uppercase">{inv.service}</td>
+                                  <td className="px-10 py-6 text-right text-sm font-black text-slate-900">{inv.amount}</td>
+                               </tr>
+                             ))}
+                          </tbody>
+                       </table>
+                    </div>
+                 </section>
+              </div>
+            )}
+            
+            {/* generic notification, security, accessibility tabs can be imported from previous versions or simplified */}
+            {activeTab === 'notifications' && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 bg-white p-12 rounded-[56px] border border-slate-200">
+                <h3 className="text-2xl font-black text-slate-900 italic uppercase mb-8">Bilgilendirme Tercihleri</h3>
+                <div className="space-y-4">
+                  <SettingToggle title="Seans Öncesi Bildirim" desc="Seans başlamadan 30dk önce hatırlatıcı gönder." active={true} />
+                  <SettingToggle title="Yeni Ödev Bildirimi" desc="Terapistiniz yeni bir materyal atadığında uyar." active={true} />
+                  <SettingToggle title="Pazarlama Bülteni" desc="Yeni özelliklerden haberdar ol." active={false} />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Sidebar: Snapshot & Actions */}
+          <div className="lg:col-span-4 space-y-10">
+             
+             {/* Profile Summary Card */}
+             <div className="bg-white rounded-[48px] border border-slate-200 p-10 shadow-sm relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:rotate-12 transition-transform duration-1000">
+                   <span className="material-symbols-outlined text-[120px]">shield_with_heart</span>
+                </div>
+                <div className="relative z-10 space-y-8">
+                   <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Hızlı_Gorus</h4>
+                   <div className="space-y-6">
+                      <ProfileStat icon="event_note" label="Kalan Seanslar" value={user?.subscription?.remainingSessions?.toString() || "4"} color="text-emerald-500" />
+                      <ProfileStat icon="verified" label="Başarı Skoru" value={`${user?.stats?.completionRate || 0}%`} color="text-primary" />
+                      <ProfileStat icon="history" label="Son Seans" value="Dün 16:00" color="text-slate-400" />
+                   </div>
+                   <button className="w-full py-5 bg-slate-900 text-white font-black rounded-[24px] shadow-xl hover:bg-black transition-all active:scale-95 uppercase text-[11px] tracking-widest">
+                      Profili Güncelle
                    </button>
                 </div>
-                <div className="flex-1">
-                   <h3 className="text-xl font-bold text-slate-900">{user?.name}</h3>
-                   <p className="text-sm text-slate-400">Son güncelleme: 12 Mart 2024</p>
-                   <div className="flex gap-2 mt-3">
-                      <span className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase rounded-lg">Uzman Terapist</span>
-                      <span className="px-3 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase rounded-lg">Doğrulanmış</span>
-                   </div>
-                </div>
-             </div>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-slate-100">
-                <div className="space-y-2">
-                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tam İsim</label>
-                   <input className="w-full px-5 py-3 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 outline-none text-sm font-medium" defaultValue={user?.name} />
-                </div>
-                <div className="space-y-2">
-                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">E-Posta Adresi</label>
-                   <input className="w-full px-5 py-3 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 outline-none text-sm font-medium" defaultValue="selin.kaya@theraspeech.com" />
-                </div>
-             </div>
-          </section>
-        )}
-
-        {activeTab === 'billing' && (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-             {/* Current Plan */}
-             <div className="bg-slate-900 rounded-[32px] p-8 text-white relative overflow-hidden shadow-2xl">
-                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                   <div>
-                      <div className="inline-flex items-center gap-2 bg-primary/20 text-primary px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-4 border border-primary/20">Aktif Plan</div>
-                      <h3 className="text-3xl font-black mb-1">Pro Klinik Paketi</h3>
-                      <p className="text-slate-400 text-sm">Bir sonraki ödeme: 01 Nisan 2024 (1,600 ₺)</p>
-                   </div>
-                   <div className="flex gap-3">
-                      <button className="px-6 py-3 bg-white text-slate-900 font-bold rounded-2xl text-sm hover:bg-slate-100 transition-colors">Planı Değiştir</button>
-                      <button className="px-6 py-3 bg-white/10 text-white font-bold rounded-2xl text-sm border border-white/10 hover:bg-white/20 transition-colors">İptal Et</button>
-                   </div>
-                </div>
-                <span className="material-symbols-outlined absolute -bottom-10 -right-10 text-[200px] text-white/5 -rotate-12">payments</span>
              </div>
 
-             {/* Invoices Table */}
-             <section className="bg-white rounded-[32px] border border-border overflow-hidden shadow-sm">
-                <div className="p-8 border-b border-border flex items-center justify-between">
-                   <h3 className="text-xl font-bold text-slate-800">Fatura Geçmişi</h3>
-                   <button className="text-sm font-bold text-primary hover:underline">Tümünü İndir (.zip)</button>
+             {/* Clinical Privacy */}
+             <div className="bg-primary rounded-[40px] p-10 text-white shadow-2xl relative overflow-hidden group">
+                <div className="absolute -bottom-10 -right-10 text-[180px] text-white/10 group-hover:rotate-12 transition-transform duration-1000">
+                   <span className="material-symbols-outlined">health_and_safety</span>
                 </div>
-                <div className="overflow-x-auto">
-                   <table className="w-full text-left">
-                      <thead className="bg-slate-50 text-slate-400 text-[10px] font-black uppercase tracking-widest border-b border-border">
-                         <tr>
-                            <th className="px-8 py-4">Fatura No</th>
-                            <th className="px-8 py-4">Tarih</th>
-                            <th className="px-8 py-4">Hizmet</th>
-                            <th className="px-8 py-4">Tutar</th>
-                            <th className="px-8 py-4">Durum</th>
-                            <th className="px-8 py-4 text-right">İşlem</th>
-                         </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-50">
-                         {MOCK_INVOICES.map(invoice => (
-                           <tr key={invoice.id} className="hover:bg-slate-50/50 transition-colors">
-                              <td className="px-8 py-5 text-sm font-bold text-slate-900">{invoice.id}</td>
-                              <td className="px-8 py-5 text-sm text-slate-500">{invoice.date}</td>
-                              <td className="px-8 py-5 text-sm font-medium text-slate-700">{invoice.service}</td>
-                              <td className="px-8 py-5 text-sm font-black text-slate-900">{invoice.amount}</td>
-                              <td className="px-8 py-5">
-                                 <span className="px-3 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase rounded-lg border border-emerald-100">Ödendi</span>
-                              </td>
-                              <td className="px-8 py-5 text-right">
-                                 <button className="p-2 hover:bg-white rounded-lg text-slate-400 hover:text-primary transition-all shadow-sm">
-                                    <span className="material-symbols-outlined text-[20px]">download</span>
-                                 </button>
-                              </td>
-                           </tr>
-                         ))}
-                      </tbody>
-                   </table>
+                <div className="relative z-10 space-y-6">
+                   <h4 className="text-xl font-black italic tracking-tight uppercase leading-none">Veri Güvenliğiniz</h4>
+                   <p className="text-sm font-medium text-sky-100 leading-relaxed italic">Tüm klinik verileriniz HIPAA ve KVKK standartlarında korunur. Dilediğiniz zaman "Veri İndirme" talebi oluşturabilirsiniz.</p>
+                   <button className="px-8 py-3 bg-white text-primary font-black text-[10px] uppercase rounded-xl tracking-widest shadow-xl active:scale-95 transition-all">
+                      Verilerimi İndir
+                   </button>
                 </div>
-             </section>
+             </div>
           </div>
-        )}
-
-        {activeTab === 'accessibility' && (
-          <section className="bg-white rounded-[32px] border border-border p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
-             <div className="flex items-center gap-3 mb-8">
-                <div className="size-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center">
-                   <span className="material-symbols-outlined">accessibility_new</span>
-                </div>
-                <h3 className="text-xl font-extrabold text-slate-800">Erişilebilirlik Ayarları</h3>
-             </div>
-             <div className="space-y-4">
-                <ToggleOption icon="contrast" title="Yüksek Kontrast" desc="Görsel öğeleri daha belirgin hale getirir." active={config.highContrast} onToggle={() => onUpdateConfig({...config, highContrast: !config.highContrast})} />
-                <ToggleOption icon="text_fields" title="Büyük Metin" desc="Tüm yazı tiplerini daha okunabilir boyuta getirir." active={config.largeText} onToggle={() => onUpdateConfig({...config, largeText: !config.largeText})} />
-                <ToggleOption icon="motion_photos_off" title="Animasyonları Azalt" desc="Uygulama içi geçiş efektlerini kapatır." active={!config.animationsEnabled} onToggle={() => onUpdateConfig({...config, animationsEnabled: !config.animationsEnabled})} />
-             </div>
-          </section>
-        )}
-
-        <div className="flex justify-end gap-4 pt-4">
-           <button className="px-8 py-4 text-slate-500 font-bold hover:text-slate-800 transition-colors">İptal</button>
-           <button className="px-8 py-4 bg-primary text-white font-black rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">Değişiklikleri Kaydet</button>
         </div>
       </div>
     </div>
   );
 };
 
-const ToggleOption: React.FC<{ icon: string, title: string, desc: string, active: boolean, onToggle: () => void }> = ({ icon, title, desc, active, onToggle }) => (
-  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-transparent hover:border-border transition-all">
-     <div className="flex items-center gap-4">
-        <div className="size-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-slate-500">
-           <span className="material-symbols-outlined">{icon}</span>
-        </div>
-        <div>
-           <div className="text-sm font-bold text-slate-800">{title}</div>
-           <div className="text-xs text-slate-400">{desc}</div>
-        </div>
+// --- Helper Components ---
+
+const TabBtn: React.FC<{ active: boolean, label: string, onClick: () => void }> = ({ active, label, onClick }) => (
+  <button 
+    onClick={onClick} 
+    className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase transition-all tracking-widest shrink-0 ${active ? 'bg-slate-900 text-white shadow-xl' : 'text-slate-400 hover:text-slate-600'}`}
+  >
+    {label}
+  </button>
+);
+
+const Field: React.FC<{ label: string, value?: string }> = ({ label, value }) => (
+  <div className="space-y-2">
+     <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-2">{label}</label>
+     <input 
+       className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 text-slate-900 font-bold text-sm outline-none focus:border-primary transition-all shadow-sm" 
+       defaultValue={value}
+     />
+  </div>
+);
+
+const SettingToggle: React.FC<{ title: string, desc: string, active: boolean }> = ({ title, desc, active }) => (
+  <div className="flex items-center justify-between p-6 bg-slate-50 rounded-[32px] border border-transparent hover:border-slate-200 transition-all group">
+     <div className="flex-1 pr-10">
+        <div className="text-sm font-black text-slate-800 uppercase tracking-tight italic mb-1">{title}</div>
+        <div className="text-xs text-slate-500 font-medium italic">{desc}</div>
      </div>
-     <button onClick={onToggle} className={`w-14 h-8 rounded-full transition-all relative ${active ? 'bg-primary' : 'bg-slate-300'}`}>
-        <div className={`absolute top-1 size-6 bg-white rounded-full shadow-md transition-all ${active ? 'left-7' : 'left-1'}`}></div>
+     <button className={`w-14 h-8 rounded-full transition-all relative ${active ? 'bg-emerald-500' : 'bg-slate-300'}`}>
+        <div className={`absolute top-1 size-6 bg-white rounded-full transition-all ${active ? 'left-7' : 'left-1'}`}></div>
      </button>
+  </div>
+);
+
+const ProfileStat: React.FC<{ icon: string, label: string, value: string, color: string }> = ({ icon, label, value, color }) => (
+  <div className="flex items-center gap-5 group/stat">
+     <div className={`size-12 rounded-2xl bg-slate-50 flex items-center justify-center group-hover/stat:scale-110 transition-transform ${color}`}>
+        <span className="material-symbols-outlined text-2xl font-black">{icon}</span>
+     </div>
+     <div>
+        <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{label}</div>
+        <div className="text-xl font-black text-slate-900 tracking-tighter italic uppercase">{value}</div>
+     </div>
+  </div>
+);
+
+const BillingStat: React.FC<{ label: string, value: string }> = ({ label, value }) => (
+  <div className="p-6 bg-white/5 rounded-3xl border border-white/5 backdrop-blur-sm">
+     <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">{label}</div>
+     <div className="text-lg font-black tracking-tighter text-white uppercase italic">{value}</div>
   </div>
 );
 

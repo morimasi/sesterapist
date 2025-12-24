@@ -28,35 +28,41 @@ import { Activity, AppView, User, SessionMetadata, PlatformModule } from './type
 import { INITIAL_SESSION_FLOW } from './constants';
 
 const DEFAULT_MODULES: PlatformModule[] = [
-  { id: 'dashboard', name: 'Panel', icon: 'dashboard', enabled: true, minRole: 'client', category: 'core', description: 'Ana yönetim ekranı.', config: { welcomeMessage: "Hoş geldiniz" } },
-  { id: 'builder', name: 'Planlayıcı', icon: 'construction', enabled: true, minRole: 'therapist', category: 'clinical', description: 'Seans akışı tasarlama aracı.', config: { autoSave: true } },
-  { id: 'library', name: 'Kütüphane', icon: 'book', enabled: true, minRole: 'client', category: 'core', description: 'Materyal ve oyun deposu.', config: { aiImageGen: true, maxResults: 20 } },
-  { id: 'progress', name: 'Gelişim', icon: 'trending_up', enabled: true, minRole: 'client', category: 'clinical', description: 'Klinik ilerleme raporları.', config: { showPredictions: true } },
-  { id: 'assessment', name: 'AI Analiz', icon: 'psychology', enabled: true, minRole: 'therapist', category: 'clinical', description: 'Vaka analizi ve ICF raporlama.', config: { model: 'gemini-3-flash-preview', thinkingBudget: 16000 } },
-  { id: 'community', name: 'Topluluk', icon: 'group', enabled: true, minRole: 'therapist', category: 'core', description: 'Uzmanlar arası vaka tartışması.', config: { moderated: true } },
-  { id: 'academic', name: 'Akademik', icon: 'school', enabled: true, minRole: 'therapist', category: 'core', description: 'Bilimsel literatür tarama.', config: { googleSearch: true, autoSummary: true } },
-  { id: 'gamification', name: 'Oyunlaştırma', icon: 'military_tech', enabled: true, minRole: 'client', category: 'core', description: 'XP ve ödül sistemi.', config: { xpMultiplier: 1.0, dailyQuestCount: 3 } },
-  { id: 'session', name: 'Seans Odası', icon: 'videocam', enabled: true, minRole: 'therapist', category: 'clinical', description: 'Görüntülü seans ve canlı AI analizi.', config: { samplingRate: 16000, voice: 'Kore' } },
-  { id: 'admin_portal', name: 'Yönetim', icon: 'admin_panel_settings', enabled: true, minRole: 'admin', category: 'admin', description: 'Sistem yönetimi.', config: { logsRetentionDays: 30 } },
-  { id: 'marketing', name: 'Pazarlama', icon: 'rocket_launch', enabled: true, minRole: 'admin', category: 'growth', description: 'Büyüme metrikleri.', config: { campaignTracking: true } },
-  { id: 'deployment', name: 'Sunucu Durumu', icon: 'cloud', enabled: true, minRole: 'admin', category: 'admin', description: 'Altyapı izleme.', config: { region: 'eu-central' } },
+  { id: 'dashboard', name: 'Ana Panel', icon: 'dashboard', enabled: true, minRole: 'client', category: 'core', description: 'Klinik süreçlerin merkezi yönetim ekranı.', config: { welcomeMessage: "Hoş geldiniz" } },
+  { id: 'builder', name: 'Planlayıcı', icon: 'construction', enabled: true, minRole: 'therapist', category: 'clinical', description: 'Seans akışı tasarlama ve özelleştirme aracı.', config: { autoSave: true } },
+  { id: 'library', name: 'İçerik Stüdyosu', icon: 'book', enabled: true, minRole: 'client', category: 'core', description: 'AI destekli materyal ve interaktif oyun deposu.', config: { aiImageGen: true, maxResults: 20 } },
+  { id: 'progress', name: 'Gelişim Analizi', icon: 'trending_up', enabled: true, minRole: 'client', category: 'clinical', description: 'Veriye dayalı klinik ilerleme raporları ve tahminler.', config: { showPredictions: true } },
+  { id: 'assessment', name: 'Klinik Muhakeme', icon: 'psychology', enabled: true, minRole: 'therapist', category: 'clinical', description: 'Vaka analizi ve ICF standartlarında raporlama.', config: { model: 'gemini-3-flash-preview', thinkingBudget: 0 } },
+  { id: 'community', name: 'Uzman Ağı', icon: 'group', enabled: true, minRole: 'therapist', category: 'core', description: 'Terapistler arası vaka tartışması ve iş birliği.', config: { moderated: true } },
+  { id: 'academic', name: 'Bilgi Üssü', icon: 'school', enabled: true, minRole: 'therapist', category: 'core', description: 'Küresel bilimsel literatür tarama ve özetleme.', config: { googleSearch: true, autoSummary: true } },
+  { id: 'gamification', name: 'Başarı Merkezi', icon: 'military_tech', enabled: true, minRole: 'client', category: 'core', description: 'XP, rozet ve ödül bazlı klinik bağlılık sistemi.', config: { xpMultiplier: 1.0, dailyQuestCount: 3 } },
+  { id: 'booking', name: 'Randevu Yönetimi', icon: 'calendar_month', enabled: true, minRole: 'client', category: 'core', description: 'Seans planlama ve operasyonel iş akışı.', config: {} },
+  { id: 'offline', name: 'Uzaktan Operasyon', icon: 'cloud_off', enabled: true, minRole: 'therapist', category: 'clinical', description: 'İnternetsiz ortamda seans yönetimi ve senkronizasyon.', config: {} },
+  { id: 'session', name: 'Canlı Oda', icon: 'videocam', enabled: true, minRole: 'therapist', category: 'clinical', description: 'Görüntülü seans ve eş zamanlı AI analizi.', config: { samplingRate: 16000, voice: 'Kore' } },
+  { id: 'admin_portal', name: 'Sistem Matrisi', icon: 'admin_panel_settings', enabled: true, minRole: 'admin', category: 'admin', description: 'Platform genel yönetimi ve yetkilendirme.', config: { logsRetentionDays: 30 } },
+  { id: 'marketing', name: 'Büyüme Zekası', icon: 'rocket_launch', enabled: true, minRole: 'admin', category: 'growth', description: 'Pazarlama metrikleri ve lansman stratejisi.', config: { campaignTracking: true } },
+  { id: 'deployment', name: 'Altyapı Konsolu', icon: 'cloud', enabled: true, minRole: 'admin', category: 'admin', description: 'Bulut altyapı ve global düğüm izleme.', config: { region: 'eu-central' } },
+  { id: 'qa', name: 'Sistem Sağlığı', icon: 'health_and_safety', enabled: true, minRole: 'admin', category: 'admin', description: 'Tanılama ve hata günlükleri.', config: {} },
 ];
 
 const INITIAL_MOCK_USERS: User[] = [
   { 
     id: 'u1', name: 'Dr. Selin Kaya', role: 'therapist', email: 'selin@theraspeech.ai', status: 'active', 
-    subscription: { plan: 'Clinic', status: 'active', nextBillingDate: '2024-12-01' },
-    stats: { totalSessions: 124, completionRate: 98, xp: 12400 }
+    // Fix: Added remainingSessions to subscription and level to stats
+    subscription: { plan: 'Clinic', status: 'active', nextBillingDate: '2024-12-01', remainingSessions: 99 },
+    stats: { totalSessions: 124, completionRate: 98, xp: 12400, level: 25 }
   },
   { 
     id: 'u2', name: 'Ahmet Yılmaz', role: 'client', email: 'ahmet@gmail.com', status: 'active',
-    subscription: { plan: 'Pro', status: 'active', nextBillingDate: '2024-11-15' },
-    stats: { totalSessions: 24, completionRate: 85, xp: 4500 }
+    // Fix: Added remainingSessions to subscription and level to stats
+    subscription: { plan: 'Pro', status: 'active', nextBillingDate: '2024-11-15', remainingSessions: 6 },
+    stats: { totalSessions: 24, completionRate: 85, xp: 4500, level: 14 }
   },
   { 
     id: 'u3', name: 'Sistem Admin', role: 'admin', email: 'admin@theraspeech.ai', status: 'active',
-    subscription: { plan: 'Clinic', status: 'active', nextBillingDate: '2099-01-01' },
-    stats: { totalSessions: 0, completionRate: 100, xp: 0 }
+    // Fix: Added remainingSessions to subscription and level to stats
+    subscription: { plan: 'Clinic', status: 'active', nextBillingDate: '2099-01-01', remainingSessions: 999 },
+    stats: { totalSessions: 0, completionRate: 100, xp: 0, level: 99 }
   },
 ];
 
@@ -104,7 +110,6 @@ const App: React.FC = () => {
       return;
     }
 
-    // Seans Odası Güvenlik & Otomatik Başlatma Mantığı
     if (view === 'session' && !activeSession) {
       handleStartSession({
         id: `quick-${Date.now()}`,
@@ -165,6 +170,7 @@ const App: React.FC = () => {
       case 'settings': return <Settings user={user} config={accessibility} onUpdateConfig={setAccessibility} />;
       case 'academic': return <AcademicLibrary config={getModuleConfig('academic')} />;
       case 'community': return <Community config={getModuleConfig('community')} />;
+      case 'offline': return <OfflineModule />;
       case 'feedback': return <FeedbackSystem onComplete={() => navigateTo('dashboard')} />;
       case 'assessment': return <AIAssessment config={getModuleConfig('assessment')} />;
       case 'help': return <HelpCenter />;
