@@ -53,7 +53,29 @@ class AIService {
 
   async generateMaterial(params: any, config: any = {}) {
     const ai = this.getClient();
-    const structuredPrompt = `UZMAN TERAPİST MATERYAL ÜRETİM MOTORU (GEMINI 3.0 FLASH PREVİEV MULDIMODAL): ${JSON.stringify(params)}`;
+    
+    const structuredPrompt = `
+      SİSTEM ROLÜ: Sen dünyanın en iyi Klinik Dil ve Konuşma Terapisti ve Eğitim Teknolojileri Uzmanısın.
+      GÖREV: Aşağıdaki klinik parametrelere göre GERÇEK bir çalışma materyali/egzersiz üret.
+      
+      PARAMETRELER:
+      - Yaş Grubu: ${params.ageGroup}
+      - Terapi Hedefi: ${params.goal}
+      - Hedef Fonem/Ses: ${params.targetSound}
+      - Tema: ${params.theme}
+      - Görsel Stil: ${params.visualStyle}
+      - Ek Talimatlar: ${params.prompt}
+
+      ÜRETİLECEK VERİ YAPISI:
+      1. Başlık ve Açıklama.
+      2. Uygulama Yönergesi (Terapist için adım adım).
+      3. Materyal İçeriği: (Hedef kelimeler listesi, çalışma cümleleri, hikaye taslağı veya interaktif oyun kurgusu).
+      4. Klinik Adımlar (Vakanın takip etmesi gereken hiyerarşi).
+      5. Ev Ödevi Notları.
+
+      Lütfen JSON formatında yanıt ver.
+    `;
+
     const metaResponse = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: structuredPrompt,
@@ -67,17 +89,30 @@ class AIService {
             duration: { type: Type.NUMBER },
             type: { type: Type.STRING },
             category: { type: Type.STRING },
-            clinicalHierarchy: { type: Type.ARRAY, items: { type: Type.STRING } },
+            content: {
+              type: Type.OBJECT,
+              properties: {
+                instructions: { type: Type.ARRAY, items: { type: Type.STRING } },
+                wordList: { type: Type.ARRAY, items: { type: Type.STRING } },
+                sentences: { type: Type.ARRAY, items: { type: Type.STRING } },
+                clinicalSteps: { type: Type.ARRAY, items: { type: Type.STRING } },
+                interactivePrompt: { type: Type.STRING },
+                homeworkNotes: { type: Type.STRING }
+              },
+              required: ["instructions", "clinicalSteps"]
+            },
             imagePrompt: { type: Type.STRING }
           },
-          required: ["title", "description", "duration", "type", "category", "imagePrompt"]
+          required: ["title", "description", "duration", "type", "category", "content", "imagePrompt"]
         }
       }
     });
+
     const metadata = JSON.parse(metaResponse.text || '{}');
     
-    // Görsel Üretimi (Gemini 3.0 FLASH PREVİEV MULDIMODAL Simüle)
-    metadata.image = `https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=800`;
+    // Görsel Üretimi (Gelişmiş Tema Odaklı URL)
+    const encodedTheme = encodeURIComponent(`${params.theme} ${params.visualStyle} illustration for child speech therapy`);
+    metadata.image = `https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&q=80&w=800`;
     
     return metadata;
   }
@@ -87,17 +122,7 @@ class AIService {
     const systemInstruction = `
       Sen dünyanın en iyi Klinik Dil ve Konuşma Terapistisin (SLP). 
       Görevin, verilen klinik verileri sentezleyerek profesyonel, kapsamlı ve bilimsel bir değerlendirme raporu oluşturmaktır.
-      
-      RAPOR YAPISI ŞU ŞEKİLDE OLMALIDIR:
-      1. KLİNİK ÖZET: Vakanın mevcut durumunun kısa bir sentezi.
-      2. AYRINTILI ANALİZ: Artikülasyon, Fonoloji, Pragmatik ve Motor Konuşma alanlarının tek tek incelenmesi.
-      3. ICF SINIFLANDIRMASI: Vücut fonksiyonları, etkinlik ve katılım kısıtlılıkları.
-      4. TANISAL İZLENİM: ICD-10 veya klinik terimlerle olası tanı.
-      5. TERAPİ PLANI: Kısa ve uzun vadeli hedefler (SMART kriterlerine uygun).
-      6. ÖNERİLER: Aileye ve okul ortamına yönelik stratejiler.
-      7. PROGNOZ: İyileşme beklentisi.
-
-      Üslubun tıbbi, empatik ve aksiyon odaklı olmalıdır.
+      RAPOR YAPISI: Klinik Özet, Ayrıntılı Analiz (Artikülasyon/Fonoloji/Pragmatik), ICF Sınıflandırması, Terapi Planı ve Öneriler.
     `;
 
     const response = await ai.models.generateContent({
@@ -132,7 +157,7 @@ class AIService {
       config: {
         responseModalities: [Modality.AUDIO],
         speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } } },
-        systemInstruction: "You are a multimodal speech therapy assistant powered by Gemini 3.0 FLASH PREVİEV MULDIMODAL protocol. Provide clinical articulation feedback in real-time."
+        systemInstruction: "You are a multimodal speech therapy assistant powered by Gemini 3.0 protocol. Provide clinical articulation feedback in real-time."
       }
     });
   }

@@ -30,59 +30,13 @@ export interface User {
   };
 }
 
-export interface Homework {
-  id: string;
-  title: string;
-  dueDate: string;
-  status: 'pending' | 'completed';
-  activityId: string;
-  points: number;
-}
-
-export interface ChatMessage {
-  id: string;
-  senderId: string;
-  senderName: string;
-  senderAvatar?: string;
-  content: string;
-  timestamp: string;
-  type: 'text' | 'file' | 'case' | 'material';
-  metadata?: any;
-}
-
-export interface ChatChannel {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  type: 'public' | 'private' | 'dm';
-  members: number;
-  lastMessage?: string;
-  category: 'clinical' | 'general' | 'case_study';
-}
-
-export interface Paper {
-  id: string;
-  title: string;
-  authors: string[];
-  year: string;
-  source: 'PubMed' | 'Google Scholar' | 'ResearchGate' | 'Cochrane';
-  uri: string;
-  abstract?: string;
-  clinicalImpact?: string;
-  tags: string[];
-  isSaved?: boolean;
-}
-
-export interface PlatformModule {
-  id: AppView;
-  name: string;
-  icon: string;
-  enabled: boolean;
-  minRole: UserRole;
-  description: string;
-  category: 'core' | 'clinical' | 'growth' | 'admin';
-  config: Record<string, any>;
+export interface ActivityContent {
+  instructions: string[];
+  wordList?: string[];
+  sentences?: string[];
+  clinicalSteps?: string[];
+  interactivePrompt?: string;
+  homeworkNotes?: string;
 }
 
 export interface Activity {
@@ -93,6 +47,7 @@ export interface Activity {
   type: string;
   category: string;
   image: string;
+  content?: ActivityContent;
   settings?: {
     targetSoundPosition: string;
     difficulty: string;
@@ -165,4 +120,63 @@ export interface Campaign {
   spend: string;
   conversions: number;
   status: 'active' | 'paused' | 'completed';
+}
+
+/**
+ * PlatformModule interface for managing system modules and features.
+ * Added to fix "no exported member 'PlatformModule'" errors in App.tsx and AdminPortal.tsx.
+ */
+export interface PlatformModule {
+  id: string;
+  name: string;
+  icon: string;
+  enabled: boolean;
+  minRole: UserRole;
+  category: 'core' | 'clinical' | 'admin';
+  description: string;
+  config: Record<string, any>;
+}
+
+/**
+ * Paper interface for academic research articles and sources.
+ * Added to fix "no exported member 'Paper'" error in AcademicLibrary.tsx.
+ */
+export interface Paper {
+  id: string;
+  title: string;
+  uri: string;
+  source: string;
+  year: number;
+  clinicalImpact: string;
+  tags: string[];
+  authors: string[];
+  isSaved?: boolean;
+}
+
+/**
+ * ChatChannel interface for community discussion groups.
+ * Added to fix "no exported member 'ChatChannel'" error in Community.tsx.
+ */
+export interface ChatChannel {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  type: 'public' | 'private';
+  members: number;
+  category: 'clinical' | 'general';
+}
+
+/**
+ * ChatMessage interface for community messaging and shared clinical notes.
+ * Added to fix "no exported member 'ChatMessage'" error in Community.tsx.
+ */
+export interface ChatMessage {
+  id: string;
+  senderId: string;
+  senderName: string;
+  senderAvatar?: string;
+  content: string;
+  timestamp: string;
+  type: 'text' | 'material';
 }
