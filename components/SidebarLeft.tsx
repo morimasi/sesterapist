@@ -18,15 +18,15 @@ const SidebarLeft: React.FC<SidebarLeftProps> = ({ onAddActivity }) => {
   };
 
   return (
-    <aside className="w-80 bg-surface-light border-r border-border-light flex flex-col z-10">
+    <aside className="w-96 bg-white border-r border-slate-200 flex flex-col z-10 shadow-sm">
       {/* Search & Filter */}
-      <div className="p-4 border-b border-border-light space-y-4">
-        <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Materyal Kütüphanesi</h2>
-        <div className="relative">
-          <span className="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[20px]">search</span>
+      <div className="p-8 border-b border-slate-50 space-y-6">
+        <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Klinik Materyaller</h2>
+        <div className="relative group">
+          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">manage_search</span>
           <input 
-            className="w-full bg-background-light border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/50 outline-none" 
-            placeholder="Egzersiz, oyun ara..." 
+            className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl pl-12 pr-4 py-4 text-sm font-bold focus:border-primary outline-none transition-all shadow-inner placeholder:text-slate-400" 
+            placeholder="Protokol veya ses ara..." 
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -34,50 +34,43 @@ const SidebarLeft: React.FC<SidebarLeftProps> = ({ onAddActivity }) => {
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex border-b border-border-light px-2">
-        <button className="flex-1 py-3 text-sm font-medium text-primary border-b-2 border-primary">Materyaller</button>
-        <button className="flex-1 py-3 text-sm font-medium text-slate-500 hover:text-slate-800 border-b-2 border-transparent">Favoriler</button>
-        <button className="flex-1 py-3 text-sm font-medium text-slate-500 hover:text-slate-800 border-b-2 border-transparent">Geçmiş</button>
-      </div>
-
       {/* Scrollable List */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-6">
+      <div className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar bg-slate-50/30">
         {ASSET_LIBRARY.map((category) => (
-          <div key={category.name}>
+          <div key={category.name} className="space-y-4">
             <div 
-              className="flex items-center justify-between mb-3 cursor-pointer group"
+              className="flex items-center justify-between px-2 cursor-pointer group"
               onClick={() => toggleCategory(category.name)}
             >
-              <h3 className="text-sm font-bold text-slate-700">{category.name}</h3>
-              <span className={`material-symbols-outlined text-slate-400 text-sm group-hover:text-primary transition-transform ${openCategories.includes(category.name) ? '' : 'rotate-180'}`}>
-                expand_less
+              <h3 className="text-[11px] font-black text-slate-900 uppercase tracking-widest">{category.name}</h3>
+              <span className={`material-symbols-outlined text-slate-400 text-lg group-hover:text-primary transition-transform ${openCategories.includes(category.name) ? '' : 'rotate-180'}`}>
+                keyboard_arrow_up
               </span>
             </div>
             
             {openCategories.includes(category.name) && (
-              <div className="grid grid-cols-1 gap-3">
+              <div className="grid grid-cols-1 gap-4">
                 {category.activities
-                  .filter(a => a.title.toLowerCase().includes(search.toLowerCase()))
+                  .filter(a => a.title.toLowerCase().includes(search.toLowerCase()) || a.category.toLowerCase().includes(search.toLowerCase()))
                   .map((activity) => (
                     <div 
                       key={activity.id}
-                      className="group bg-white border border-border-light rounded-lg p-2 flex gap-3 cursor-grab hover:shadow-md hover:border-primary/50 transition-all select-none"
+                      className="group bg-white border-2 border-transparent rounded-[32px] p-4 flex gap-5 cursor-pointer hover:shadow-xl hover:border-primary/20 transition-all select-none relative overflow-hidden"
                       onClick={() => onAddActivity(activity)}
                     >
                       <div 
-                        className="size-16 rounded bg-slate-100 flex-shrink-0 bg-cover bg-center" 
+                        className="size-20 rounded-[24px] flex-shrink-0 bg-cover bg-center shadow-lg group-hover:scale-105 transition-transform" 
                         style={{ backgroundImage: `url(${activity.image})` }}
                       ></div>
-                      <div className="flex flex-col justify-center min-w-0">
-                        <h4 className="text-sm font-semibold truncate group-hover:text-primary transition-colors">{activity.title}</h4>
-                        <p className="text-xs text-slate-500 truncate">{activity.category} • {activity.duration ? `${activity.duration} dk` : 'N/A'}</p>
-                        <div className="flex gap-1 mt-1">
-                          <span className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-medium">{activity.type}</span>
+                      <div className="flex flex-col justify-center min-w-0 pr-4">
+                        <h4 className="text-sm font-black text-slate-900 italic uppercase leading-tight truncate group-hover:text-primary transition-colors">{activity.title}</h4>
+                        <div className="flex items-center gap-2 mt-2">
+                           <span className="text-[8px] bg-primary/5 text-primary px-2 py-0.5 rounded-lg font-black uppercase tracking-widest border border-primary/10">{activity.type}</span>
+                           <span className="text-[9px] text-slate-400 font-bold uppercase">{activity.duration} DK</span>
                         </div>
                       </div>
-                      <div className="ml-auto flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <span className="material-symbols-outlined text-slate-400">add_circle</span>
+                      <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
+                        <span className="material-symbols-outlined text-primary font-black">add_circle</span>
                       </div>
                     </div>
                   ))}

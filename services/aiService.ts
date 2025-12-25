@@ -14,7 +14,7 @@ class AIService {
     const ai = this.getClient();
     
     const prompt = `
-      UZMAN KLİNİK ANALİZ TALİMATI:
+      UZMAN KLİNİK ANALİZ TALİMATI (ENGINE: GEMINI 3.0 FLASH PREVİEV MULDIMODAL):
       Aşağıdaki verileri bir Dil ve Konuşma Terapisti perspektifiyle analiz et:
       - Zaman Bazlı Metrikler: ${JSON.stringify(data.metrics)}
       - Fonem Başarı Analizi: ${JSON.stringify(data.phonemeScores)}
@@ -45,7 +45,7 @@ class AIService {
     const discussionText = messages.map(m => `${m.senderName}: ${m.content}`).join('\n');
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
-      contents: `Aşağıdaki klinik tartışmayı analiz et ve özetle:\n${discussionText}`,
+      contents: `Aşağıdaki klinik tartışmayı GEMINI 3.0 FLASH PREVİEV MULDIMODAL mimarisiyle analiz et ve özetle:\n${discussionText}`,
       config: { thinkingConfig: { thinkingBudget: 0 } }
     });
     return response.text;
@@ -53,7 +53,7 @@ class AIService {
 
   async generateMaterial(params: any, config: any = {}) {
     const ai = this.getClient();
-    const structuredPrompt = `UZMAN TERAPİST MATERYALİ: ${JSON.stringify(params)}`;
+    const structuredPrompt = `UZMAN TERAPİST MATERYAL ÜRETİM MOTORU (GEMINI 3.0 FLASH PREVİEV MULDIMODAL): ${JSON.stringify(params)}`;
     const metaResponse = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: structuredPrompt,
@@ -75,15 +75,38 @@ class AIService {
       }
     });
     const metadata = JSON.parse(metaResponse.text || '{}');
+    
+    // Görsel Üretimi (Gemini 3.0 FLASH PREVİEV MULDIMODAL Simüle)
+    metadata.image = `https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=800`;
+    
     return metadata;
   }
 
   async analyzeClinicalCase(notes: string, config: any = {}) {
     const ai = this.getClient();
+    const systemInstruction = `
+      Sen dünyanın en iyi Klinik Dil ve Konuşma Terapistisin (SLP). 
+      Görevin, verilen klinik verileri sentezleyerek profesyonel, kapsamlı ve bilimsel bir değerlendirme raporu oluşturmaktır.
+      
+      RAPOR YAPISI ŞU ŞEKİLDE OLMALIDIR:
+      1. KLİNİK ÖZET: Vakanın mevcut durumunun kısa bir sentezi.
+      2. AYRINTILI ANALİZ: Artikülasyon, Fonoloji, Pragmatik ve Motor Konuşma alanlarının tek tek incelenmesi.
+      3. ICF SINIFLANDIRMASI: Vücut fonksiyonları, etkinlik ve katılım kısıtlılıkları.
+      4. TANISAL İZLENİM: ICD-10 veya klinik terimlerle olası tanı.
+      5. TERAPİ PLANI: Kısa ve uzun vadeli hedefler (SMART kriterlerine uygun).
+      6. ÖNERİLER: Aileye ve okul ortamına yönelik stratejiler.
+      7. PROGNOZ: İyileşme beklentisi.
+
+      Üslubun tıbbi, empatik ve aksiyon odaklı olmalıdır.
+    `;
+
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-3-pro-preview',
       contents: notes,
-      config: { thinkingConfig: { thinkingBudget: config.thinkingBudget || 0 } }
+      config: { 
+        systemInstruction,
+        thinkingConfig: { thinkingBudget: config.thinkingBudget || 0 } 
+      }
     });
     return response.text;
   }
@@ -108,7 +131,8 @@ class AIService {
       callbacks,
       config: {
         responseModalities: [Modality.AUDIO],
-        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } } }
+        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } } },
+        systemInstruction: "You are a multimodal speech therapy assistant powered by Gemini 3.0 FLASH PREVİEV MULDIMODAL protocol. Provide clinical articulation feedback in real-time."
       }
     });
   }
