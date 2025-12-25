@@ -75,7 +75,11 @@ const App: React.FC = () => {
   }, [theme]);
 
   useEffect(() => {
-    if (user) localStorage.setItem('theraspeech_user', JSON.stringify(user));
+    if (user) {
+      localStorage.setItem('theraspeech_user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('theraspeech_user');
+    }
     localStorage.setItem('theraspeech_modules', JSON.stringify(modules));
     localStorage.setItem('theraspeech_all_users', JSON.stringify(users));
   }, [user, modules, users]);
@@ -108,6 +112,11 @@ const App: React.FC = () => {
     navigateTo('session');
   };
 
+  const handleLogout = () => {
+    setUser(null);
+    setCurrentView('landing');
+  };
+
   const renderModule = () => {
     switch (currentView) {
       case 'landing': return <LandingPage onGetStarted={() => navigateTo('login')} />;
@@ -133,7 +142,7 @@ const App: React.FC = () => {
       case 'library': return <MaterialLibrary onAdd={(a) => { const id = `s-${Date.now()}`; setSessionFlow([...sessionFlow, {...a, id}]); setSelectedActivityId(id); navigateTo('builder'); }} />;
       case 'gamification': return <Gamification />;
       case 'booking': return <Booking onComplete={() => navigateTo('dashboard')} />;
-      case 'settings': return <Settings user={user} config={accessibility} onUpdateConfig={setAccessibility} />;
+      case 'settings': return <Settings user={user} onUpdateUser={setUser} onLogout={handleLogout} config={accessibility} onUpdateConfig={setAccessibility} />;
       case 'academic': return <AcademicLibrary />;
       case 'community': return <Community />;
       case 'offline': return <OfflineModule />;
