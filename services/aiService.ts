@@ -28,7 +28,7 @@ class AIService {
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: prompt,
-        config: { thinkingConfig: { thinkingBudget: config.thinkingBudget || 0 } }
+        config: { thinkingConfig: { thinkingBudget: config.thinkingBudget || 0 } as any }
       });
 
       return response.text;
@@ -213,7 +213,7 @@ class AIService {
     const response = await ai.models.generateContent({
       model: 'gemini-3-pro-preview',
       contents: notes,
-      config: { thinkingConfig: { thinkingBudget: config.thinkingBudget || 2000 } }
+      config: { thinkingConfig: { thinkingBudget: config.thinkingBudget || 2000 } as any }
     });
     return response.text;
   }

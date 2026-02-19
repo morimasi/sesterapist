@@ -56,7 +56,7 @@ const Header: React.FC<HeaderProps> = ({ currentView, user, theme, toggleTheme, 
                 icon={mod.icon} 
                 label={mod.name} 
                 active={currentView === mod.id} 
-                onClick={() => onNavigate(mod.id)} 
+                onClick={() => onNavigate(mod.id as AppView)} 
               />
             ))}
           </nav>
@@ -112,7 +112,7 @@ const Header: React.FC<HeaderProps> = ({ currentView, user, theme, toggleTheme, 
              {user && navModules.map(mod => (
                <button 
                  key={mod.id}
-                 onClick={() => { onNavigate(mod.id); setIsMobileMenuOpen(false); }}
+                 onClick={() => { onNavigate(mod.id as AppView); setIsMobileMenuOpen(false); }}
                  className={`flex flex-col items-center gap-3 p-6 rounded-[24px] transition-all border ${currentView === mod.id ? 'bg-primary text-white border-primary shadow-lg' : 'bg-slate-50 dark:bg-white/5 border-transparent text-slate-500'}`}
                >
                  <span className="material-symbols-outlined text-3xl">{mod.icon}</span>
