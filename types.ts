@@ -37,6 +37,11 @@ export interface ActivityContent {
   clinicalSteps?: string[];
   interactivePrompt?: string;
   homeworkNotes?: string;
+  // New fields for advanced generation
+  targetPhoneme?: string;
+  minimalPairs?: { target: string, foil: string }[];
+  storyText?: string;
+  clozeQuestions?: { sentence: string, answer: string, options: string[] }[];
 }
 
 export interface Activity {
@@ -44,7 +49,7 @@ export interface Activity {
   title: string;
   description: string;
   duration: number;
-  type: string;
+  type: string; // 'Flashcards' | 'Story' | 'MinimalPairs' | 'Exercise'
   category: string;
   image: string;
   content?: ActivityContent;
@@ -53,6 +58,8 @@ export interface Activity {
     difficulty: string;
     notes: string;
   };
+  isAiGenerated?: boolean;
+  generatedDate?: string;
 }
 
 export interface Category {
@@ -122,10 +129,6 @@ export interface Campaign {
   status: 'active' | 'paused' | 'completed';
 }
 
-/**
- * PlatformModule interface for managing system modules and features.
- * Added to fix "no exported member 'PlatformModule'" errors in App.tsx and AdminPortal.tsx.
- */
 export interface PlatformModule {
   id: string;
   name: string;
@@ -137,10 +140,6 @@ export interface PlatformModule {
   config: Record<string, any>;
 }
 
-/**
- * Paper interface for academic research articles and sources.
- * Added to fix "no exported member 'Paper'" error in AcademicLibrary.tsx.
- */
 export interface Paper {
   id: string;
   title: string;
@@ -153,10 +152,6 @@ export interface Paper {
   isSaved?: boolean;
 }
 
-/**
- * ChatChannel interface for community discussion groups.
- * Added to fix "no exported member 'ChatChannel'" error in Community.tsx.
- */
 export interface ChatChannel {
   id: string;
   name: string;
@@ -167,10 +162,6 @@ export interface ChatChannel {
   category: 'clinical' | 'general';
 }
 
-/**
- * ChatMessage interface for community messaging and shared clinical notes.
- * Added to fix "no exported member 'ChatMessage'" error in Community.tsx.
- */
 export interface ChatMessage {
   id: string;
   senderId: string;
@@ -179,4 +170,15 @@ export interface ChatMessage {
   content: string;
   timestamp: string;
   type: 'text' | 'material';
+}
+
+// New Types for Factory
+export interface GenerationParams {
+  type: 'Flashcards' | 'Story' | 'MinimalPairs' | 'General';
+  targetSound: string;
+  position: 'Initial' | 'Medial' | 'Final' | 'Mixed';
+  ageGroup: string;
+  theme: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  visualStyle: string;
 }
