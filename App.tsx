@@ -1,26 +1,30 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import LandingPage from './components/LandingPage';
 import Dashboard from './components/Dashboard';
-import SidebarLeft from './components/SidebarLeft';
-import Timeline from './components/Timeline';
-import SidebarRight from './components/SidebarRight';
 import Auth from './components/Auth';
-import SessionRoom from './components/SessionRoom';
-import ProgressReports from './components/ProgressReports';
-import MaterialLibrary from './components/MaterialLibrary';
-import Gamification from './components/Gamification';
-import Booking from './components/Booking';
+import BottomNav from './components/BottomNav';
 import Settings from './components/Settings';
+import HelpCenter from './components/HelpCenter';
+import FeedbackSystem from './components/FeedbackSystem';
+import Booking from './components/Booking';
+import ProgressReports from './components/ProgressReports';
 import AcademicLibrary from './components/AcademicLibrary';
 import Community from './components/Community';
-import OfflineModule from './components/OfflineModule';
-import FeedbackSystem from './components/FeedbackSystem';
-import BottomNav from './components/BottomNav';
-import AIAssessment from './components/AIAssessment';
-import AdminPortal from './components/AdminPortal';
-import HelpCenter from './components/HelpCenter';
+import Gamification from './components/Gamification';
+import MarketingDashboard from './components/MarketingDashboard';
+import QualityControl from './components/QualityControl';
+import DeploymentDashboard from './components/DeploymentDashboard';
+
+// --- YENİ MODÜLER İMPORTLAR ---
+import Planner from './modules/Planner';
+import ContentStudio from './modules/ContentStudio';
+import ClinicalReasoning from './modules/ClinicalReasoning';
+import LiveSession from './modules/LiveSession';
+import OfflineManager from './modules/OfflineManager';
+import AdminConsole from './modules/AdminConsole';
+
 import { Activity, AppView, User, SessionMetadata, PlatformModule } from './types';
 import { INITIAL_SESSION_FLOW } from './constants';
 
@@ -66,7 +70,6 @@ const App: React.FC = () => {
   
   const [activeSession, setActiveSession] = useState<SessionMetadata | null>(null);
   const [sessionFlow, setSessionFlow] = useState<Activity[]>(INITIAL_SESSION_FLOW);
-  const [selectedActivityId, setSelectedActivityId] = useState<string>("");
   const [accessibility, setAccessibility] = useState({ highContrast: false, largeText: false, animationsEnabled: true });
 
   useEffect(() => {
@@ -122,33 +125,55 @@ const App: React.FC = () => {
       case 'landing': return <LandingPage onGetStarted={() => navigateTo('login')} />;
       case 'login': return <Auth onLogin={(u) => { setUser(u); navigateTo('dashboard'); }} />;
       case 'dashboard': return <Dashboard user={user} onStartBuilder={() => navigateTo('builder')} onJoinSession={(s) => { setActiveSession({...s, flow: sessionFlow}); navigateTo('session'); }} onStartAssessment={() => navigateTo('assessment')} />;
+      
+      // --- MODÜLER YAPI ENTEGRASYONU ---
       case 'builder': return (
-        <div className="flex flex-1 flex-col md:flex-row overflow-hidden animate-in fade-in duration-500">
-          <SidebarLeft onAddActivity={(a) => { const id = `s-${Date.now()}`; setSessionFlow([...sessionFlow, {...a, id}]); setSelectedActivityId(id); }} />
-          <Timeline 
-            sessionFlow={sessionFlow} 
-            selectedId={selectedActivityId} 
-            onSelect={setSelectedActivityId} 
-            onRemove={(id) => setSessionFlow(sessionFlow.filter(a => a.id !== id))} 
-            onClearAll={() => setSessionFlow([])} 
-            users={users}
-            onLaunchSession={startSessionWithClient}
-          />
-          <SidebarRight activity={sessionFlow.find(a => a.id === selectedActivityId)} onUpdate={(u) => setSessionFlow(sessionFlow.map(a => a.id === u.id ? u : a))} onRemove={() => { setSessionFlow(sessionFlow.filter(a => a.id !== selectedActivityId)); setSelectedActivityId(""); }} />
-        </div>
+        <Planner 
+          sessionFlow={sessionFlow} 
+          setSessionFlow={setSessionFlow} 
+          users={users} 
+          onLaunchSession={startSessionWithClient} 
+        />
       );
-      case 'session': return <SessionRoom session={activeSession} onEndSession={() => { setActiveSession(null); setSessionFlow([]); navigateTo('feedback'); }} />;
+      case 'library': return (
+        <ContentStudio 
+          onAddActivity={(a) => { 
+            const id = `s-${Date.now()}`; 
+            setSessionFlow([...sessionFlow, {...a, id}]); 
+            navigateTo('builder'); 
+          }} 
+        />
+      );
+      case 'assessment': return <ClinicalReasoning />;
+      case 'session': return (
+        <LiveSession 
+          session={activeSession} 
+          onEndSession={() => { setActiveSession(null); setSessionFlow([]); navigateTo('feedback'); }} 
+        />
+      );
+      case 'offline': return <OfflineManager />;
+      case 'admin_portal': return (
+        <AdminConsole 
+          modules={modules} 
+          onUpdateModules={setModules} 
+          users={users} 
+          onUpdateUsers={setUsers} 
+        />
+      );
+      // ---------------------------------
+
       case 'progress': return <ProgressReports />;
-      case 'library': return <MaterialLibrary onAdd={(a) => { const id = `s-${Date.now()}`; setSessionFlow([...sessionFlow, {...a, id}]); setSelectedActivityId(id); navigateTo('builder'); }} />;
       case 'gamification': return <Gamification />;
       case 'booking': return <Booking onComplete={() => navigateTo('dashboard')} />;
       case 'settings': return <Settings user={user} onUpdateUser={setUser} onLogout={handleLogout} config={accessibility} onUpdateConfig={setAccessibility} />;
       case 'academic': return <AcademicLibrary />;
       case 'community': return <Community />;
-      case 'offline': return <OfflineModule />;
       case 'feedback': return <FeedbackSystem onComplete={() => navigateTo('dashboard')} />;
-      case 'assessment': return <AIAssessment />;
-      case 'admin_portal': return <AdminPortal modules={modules} onUpdateModules={setModules} users={users} onUpdateUsers={setUsers} />;
+      case 'help': return <HelpCenter />;
+      case 'qa': return <QualityControl />;
+      case 'deployment': return <DeploymentDashboard />;
+      case 'marketing': return <MarketingDashboard />;
+      
       default: return <LandingPage onGetStarted={() => navigateTo('login')} />;
     }
   };
